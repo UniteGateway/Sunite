@@ -50,7 +50,12 @@ class MainActivity : ComponentActivity() {
             userDao = db.userDao(),
             orgDao = db.orgDao(),
             systemDao = db.systemDao(),
-            crmDao = db.crmDao()
+            crmDao = db.crmDao(),
+            solarDesignDao = db.solarDesignDao(),
+            pricingDao = db.pricingDao(),
+            quotationDao = db.quotationDao(),
+            projectExecutionDao = db.projectExecutionDao(),
+            afterSalesDao = db.afterSalesDao()
         )
 
         setContent {
@@ -192,6 +197,7 @@ fun SuniteMainApp(repository: SuniteRepository) {
                                     repository = repository,
                                     onNavigate = { currentRoute = it }
                                 )
+                                "master_workflow" -> com.example.ui.screens.workflow.MasterWorkflowEngineScreen(repository = repository)
                                 "role_dashboards" -> RoleDashboardsScreen(repository = repository)
                                 "crm" -> CustomerCrmScreen(repository = repository)
                                 "leads" -> LeadManagementScreen(repository = repository)
@@ -245,6 +251,8 @@ fun SuniteMainApp(repository: SuniteRepository) {
                                     icon = Icons.Outlined.Handshake,
                                     primaryActionLabel = "+ Register Vendor"
                                 )
+                                "pricing_engine" -> com.example.ui.screens.pricing.DynamicPricingEngineScreen(repository = repository)
+                                "solar_design" -> com.example.ui.screens.design.SolarDesignCalculatorScreen(repository = repository)
                                 "survey" -> com.example.ui.screens.modules.GenericModuleScreen(
                                     title = "Site Feasibility & Surveys",
                                     subtitle = "Roof structural analysis, shadow testing, and CAD validation",
@@ -252,20 +260,8 @@ fun SuniteMainApp(repository: SuniteRepository) {
                                     icon = Icons.Outlined.Assignment,
                                     primaryActionLabel = "+ Create Site Survey"
                                 )
-                                "quotation" -> com.example.ui.screens.modules.GenericModuleScreen(
-                                    title = "Quotation Engine",
-                                    subtitle = "BOM generation, tax credit calculation & ROI projections",
-                                    category = "QUOTATION MODULE",
-                                    icon = Icons.Outlined.RequestQuote,
-                                    primaryActionLabel = "+ Generate Quote"
-                                )
-                                "projects" -> com.example.ui.screens.modules.GenericModuleScreen(
-                                    title = "Solar Projects & EPC",
-                                    subtitle = "Project execution, grid compliance, and installation milestones",
-                                    category = "PROJECTS MODULE",
-                                    icon = Icons.Outlined.SolarPower,
-                                    primaryActionLabel = "+ Create Project"
-                                )
+                                "quotation" -> com.example.ui.screens.quotation.ProfessionalQuotationEngineScreen(repository = repository)
+                                "projects" -> com.example.ui.screens.execution.ProjectExecutionOrderScreen(repository = repository)
                                 "finance" -> com.example.ui.screens.modules.GenericModuleScreen(
                                     title = "Finance & Escrow",
                                     subtitle = "Partner commission payouts, invoicing, tax withholding & billing",
@@ -273,7 +269,16 @@ fun SuniteMainApp(repository: SuniteRepository) {
                                     icon = Icons.Outlined.Payments,
                                     primaryActionLabel = "+ Record Transaction"
                                 )
-                                "warranty" -> com.example.ui.screens.modules.GenericModuleScreen(
+                                "after_sales" -> com.example.ui.screens.modules.AfterSalesServiceScreen(repository = repository, initialTab = 0)
+                                "warranty" -> com.example.ui.screens.modules.AfterSalesServiceScreen(repository = repository, initialTab = 0)
+                                "amc" -> com.example.ui.screens.modules.AfterSalesServiceScreen(repository = repository, initialTab = 1)
+                                "service_tickets" -> com.example.ui.screens.modules.AfterSalesServiceScreen(repository = repository, initialTab = 2)
+                                "service_visits" -> com.example.ui.screens.modules.AfterSalesServiceScreen(repository = repository, initialTab = 3)
+                                "preventive_maintenance" -> com.example.ui.screens.modules.AfterSalesServiceScreen(repository = repository, initialTab = 4)
+                                "spare_inventory" -> com.example.ui.screens.modules.AfterSalesServiceScreen(repository = repository, initialTab = 5)
+                                "warranty_claims" -> com.example.ui.screens.modules.AfterSalesServiceScreen(repository = repository, initialTab = 6)
+                                "customer_feedback" -> com.example.ui.screens.modules.AfterSalesServiceScreen(repository = repository, initialTab = 7)
+                                "warranty_old" -> com.example.ui.screens.modules.GenericModuleScreen(
                                     title = "Warranty & AMC Contracts",
                                     subtitle = "Annual maintenance contracts, panel degradation & telemetry alerts",
                                     category = "WARRANTY MODULE",

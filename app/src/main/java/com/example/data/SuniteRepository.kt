@@ -1,7 +1,13 @@
 package com.example.data
 
+import com.example.data.dao.AfterSalesDao
 import com.example.data.dao.CrmDao
 import com.example.data.dao.OrgDao
+import com.example.data.dao.PricingDao
+import com.example.data.dao.ProjectExecutionDao
+import com.example.data.dao.QuotationDao
+import com.example.data.dao.SmartEnergyDao
+import com.example.data.dao.SolarDesignDao
 import com.example.data.dao.SystemDao
 import com.example.data.dao.UserDao
 import com.example.data.entity.*
@@ -11,7 +17,13 @@ class SuniteRepository(
     private val userDao: UserDao,
     private val orgDao: OrgDao,
     private val systemDao: SystemDao,
-    private val crmDao: CrmDao
+    private val crmDao: CrmDao,
+    private val solarDesignDao: SolarDesignDao,
+    private val pricingDao: PricingDao,
+    private val quotationDao: QuotationDao,
+    private val projectExecutionDao: ProjectExecutionDao,
+    private val afterSalesDao: AfterSalesDao,
+    private val smartEnergyDao: SmartEnergyDao
 ) {
     // Organization
     val organization: Flow<OrganizationEntity?> = orgDao.getOrganizationFlow()
@@ -97,5 +109,138 @@ class SuniteRepository(
     // Templates
     val templates: Flow<List<TemplateEntity>> = systemDao.getAllTemplates()
     suspend fun updateTemplate(template: TemplateEntity) = systemDao.updateTemplate(template)
+
+    // Solar Designs
+    val solarDesigns: Flow<List<SolarDesignEntity>> = solarDesignDao.getAllDesigns()
+    fun getDesignsByLeadId(leadId: String): Flow<List<SolarDesignEntity>> = solarDesignDao.getDesignsByLeadId(leadId)
+    suspend fun getDesignById(id: String): SolarDesignEntity? = solarDesignDao.getDesignById(id)
+    suspend fun addSolarDesign(design: SolarDesignEntity) = solarDesignDao.insertDesign(design)
+    suspend fun updateSolarDesign(design: SolarDesignEntity) = solarDesignDao.updateDesign(design)
+    suspend fun updateSolarDesignStatus(id: String, status: String, updatedAt: String = "2026-07-30") = solarDesignDao.updateDesignStatus(id, status, updatedAt)
+
+    // Pricing & Commercials
+    val pricingMasters: Flow<List<PricingMasterEntity>> = pricingDao.getAllPricingMasters()
+    suspend fun addPricingMaster(master: PricingMasterEntity) = pricingDao.insertPricingMaster(master)
+    suspend fun updatePricingMaster(master: PricingMasterEntity) = pricingDao.updatePricingMaster(master)
+    suspend fun deletePricingMaster(master: PricingMasterEntity) = pricingDao.deletePricingMaster(master)
+
+    val quotations: Flow<List<QuotationCommercialEntity>> = pricingDao.getAllQuotations()
+    suspend fun getQuotationById(id: String): QuotationCommercialEntity? = pricingDao.getQuotationById(id)
+    suspend fun addQuotation(quotation: QuotationCommercialEntity) = pricingDao.insertQuotation(quotation)
+    suspend fun updateQuotation(quotation: QuotationCommercialEntity) = pricingDao.updateQuotation(quotation)
+    suspend fun updateQuotationStatus(id: String, status: String, notes: String, updatedAt: String = "2026-07-30") = pricingDao.updateQuotationStatus(id, status, notes, updatedAt)
+
+    val pricingRules: Flow<List<PricingRuleEntity>> = pricingDao.getAllPricingRules()
+    suspend fun addPricingRule(rule: PricingRuleEntity) = pricingDao.insertPricingRule(rule)
+
+    // Quotations & Proposals (Phase 5 Engine)
+    val quotationProposals: Flow<List<QuotationProposalEntity>> = quotationDao.getAllProposals()
+    suspend fun getQuotationProposalById(id: String): QuotationProposalEntity? = quotationDao.getProposalById(id)
+    suspend fun addQuotationProposal(proposal: QuotationProposalEntity) = quotationDao.insertProposal(proposal)
+    suspend fun updateQuotationProposal(proposal: QuotationProposalEntity) = quotationDao.updateProposal(proposal)
+    suspend fun updateQuotationProposalStatus(id: String, status: String, notes: String, updatedAt: String = "2026-07-30") = quotationDao.updateProposalStatus(id, status, notes, updatedAt)
+    suspend fun deleteQuotationProposal(id: String) = quotationDao.deleteProposalById(id)
+
+    fun getVersionsForQuotation(quotationId: String): Flow<List<QuotationVersionEntity>> = quotationDao.getVersionsForQuotation(quotationId)
+    suspend fun addQuotationVersion(version: QuotationVersionEntity) = quotationDao.insertVersion(version)
+
+    fun getDeliveryLogsForQuotation(quotationId: String): Flow<List<QuotationDeliveryLogEntity>> = quotationDao.getDeliveryLogsForQuotation(quotationId)
+    suspend fun addQuotationDeliveryLog(log: QuotationDeliveryLogEntity) = quotationDao.insertDeliveryLog(log)
+
+    // Project Execution & Order Management (Phase 6)
+    val solarOrders: Flow<List<SolarOrderEntity>> = projectExecutionDao.getAllOrders()
+    suspend fun addSolarOrder(order: SolarOrderEntity) = projectExecutionDao.insertOrder(order)
+
+    val solarProjects: Flow<List<SolarProjectEntity>> = projectExecutionDao.getAllProjects()
+    suspend fun getSolarProjectById(id: String): SolarProjectEntity? = projectExecutionDao.getProjectById(id)
+    suspend fun addSolarProject(project: SolarProjectEntity) = projectExecutionDao.insertProject(project)
+    suspend fun updateSolarProject(project: SolarProjectEntity) = projectExecutionDao.updateProject(project)
+    suspend fun updateSolarProjectStage(id: String, stage: String, progress: Double, updatedAt: String = "2026-07-30") = projectExecutionDao.updateProjectStage(id, stage, progress, updatedAt)
+
+    fun getTasksForProject(projectId: String): Flow<List<ProjectTaskEntity>> = projectExecutionDao.getTasksForProject(projectId)
+    suspend fun addTask(task: ProjectTaskEntity) = projectExecutionDao.insertTask(task)
+    suspend fun updateTask(task: ProjectTaskEntity) = projectExecutionDao.updateTask(task)
+
+    fun getPurchaseRequestsForProject(projectId: String): Flow<List<PurchaseRequestEntity>> = projectExecutionDao.getPurchaseRequestsForProject(projectId)
+    suspend fun addPurchaseRequest(pr: PurchaseRequestEntity) = projectExecutionDao.insertPurchaseRequest(pr)
+
+    fun getInstallationLogsForProject(projectId: String): Flow<List<InstallationLogEntity>> = projectExecutionDao.getInstallationLogsForProject(projectId)
+    suspend fun addInstallationLog(log: InstallationLogEntity) = projectExecutionDao.insertInstallationLog(log)
+
+    fun getCommissioningReportForProject(projectId: String): Flow<CommissioningReportEntity?> = projectExecutionDao.getCommissioningReportForProject(projectId)
+    suspend fun addCommissioningReport(report: CommissioningReportEntity) = projectExecutionDao.insertCommissioningReport(report)
+
+    // Phase 8 After Sales Service, Warranty & AMC
+    val warranties: Flow<List<WarrantyEntity>> = afterSalesDao.getAllWarranties()
+    fun getWarrantiesForProject(projectId: String): Flow<List<WarrantyEntity>> = afterSalesDao.getWarrantiesForProject(projectId)
+    suspend fun addWarranty(warranty: WarrantyEntity) = afterSalesDao.insertWarranty(warranty)
+
+    val amcContracts: Flow<List<AMCEntity>> = afterSalesDao.getAllAMCs()
+    fun getAMCsForProject(projectId: String): Flow<List<AMCEntity>> = afterSalesDao.getAMCsForProject(projectId)
+    suspend fun addAMC(amc: AMCEntity) = afterSalesDao.insertAMC(amc)
+
+    val serviceTickets: Flow<List<ServiceTicketEntity>> = afterSalesDao.getAllTickets()
+    fun getTicketsForProject(projectId: String): Flow<List<ServiceTicketEntity>> = afterSalesDao.getTicketsForProject(projectId)
+    suspend fun addServiceTicket(ticket: ServiceTicketEntity) = afterSalesDao.insertTicket(ticket)
+    suspend fun updateServiceTicket(ticket: ServiceTicketEntity) = afterSalesDao.updateTicket(ticket)
+
+    val serviceVisits: Flow<List<ServiceVisitEntity>> = afterSalesDao.getAllVisits()
+    fun getVisitsForTicket(ticketId: String): Flow<List<ServiceVisitEntity>> = afterSalesDao.getVisitsForTicket(ticketId)
+    suspend fun addServiceVisit(visit: ServiceVisitEntity) = afterSalesDao.insertVisit(visit)
+
+    val preventiveMaintenances: Flow<List<PreventiveMaintenanceEntity>> = afterSalesDao.getAllPreventiveMaintenances()
+    suspend fun addPreventiveMaintenance(pm: PreventiveMaintenanceEntity) = afterSalesDao.insertPreventiveMaintenance(pm)
+
+    val spareInventories: Flow<List<SpareInventoryEntity>> = afterSalesDao.getAllSpares()
+    suspend fun addSpareInventory(spare: SpareInventoryEntity) = afterSalesDao.insertSpare(spare)
+
+    val warrantyClaims: Flow<List<WarrantyClaimEntity>> = afterSalesDao.getAllWarrantyClaims()
+    suspend fun addWarrantyClaim(claim: WarrantyClaimEntity) = afterSalesDao.insertWarrantyClaim(claim)
+
+    val customerFeedbacks: Flow<List<CustomerFeedbackEntity>> = afterSalesDao.getAllCustomerFeedback()
+    suspend fun addCustomerFeedback(feedback: CustomerFeedbackEntity) = afterSalesDao.insertCustomerFeedback(feedback)
+
+    val equipmentHealths: Flow<List<EquipmentHealthEntity>> = afterSalesDao.getAllEquipmentHealth()
+    suspend fun addEquipmentHealth(health: EquipmentHealthEntity) = afterSalesDao.insertEquipmentHealth(health)
+
+    val serviceNotifications: Flow<List<ServiceNotificationEntity>> = afterSalesDao.getAllServiceNotifications()
+    suspend fun addServiceNotification(notification: ServiceNotificationEntity) = afterSalesDao.insertServiceNotification(notification)
+
+    // Phase 9 AI, SCADA, IoT & Smart Energy Platform
+    val electricityBills: Flow<List<ElectricityBillEntity>> = smartEnergyDao.getAllElectricityBills()
+    suspend fun addElectricityBill(bill: ElectricityBillEntity) = smartEnergyDao.insertElectricityBill(bill)
+
+    fun getOCRResultForBill(billId: String): Flow<OCRResultEntity?> = smartEnergyDao.getOCRResultForBill(billId)
+    suspend fun addOCRResult(result: OCRResultEntity) = smartEnergyDao.insertOCRResult(result)
+
+    val roofAnalyses: Flow<List<RoofAnalysisEntity>> = smartEnergyDao.getAllRoofAnalyses()
+    suspend fun addRoofAnalysis(analysis: RoofAnalysisEntity) = smartEnergyDao.insertRoofAnalysis(analysis)
+
+    val aiRecommendations: Flow<List<AIRecommendationEntity>> = smartEnergyDao.getAllAIRecommendations()
+    suspend fun addAIRecommendation(rec: AIRecommendationEntity) = smartEnergyDao.insertAIRecommendation(rec)
+
+    val scadaDevices: Flow<List<SCADADeviceEntity>> = smartEnergyDao.getAllSCADADevices()
+    suspend fun addSCADADevice(device: SCADADeviceEntity) = smartEnergyDao.insertSCADADevice(device)
+
+    val realtimeGenerations: Flow<List<RealtimeGenerationEntity>> = smartEnergyDao.getAllRealtimeGenerations()
+    suspend fun addRealtimeGeneration(gen: RealtimeGenerationEntity) = smartEnergyDao.insertRealtimeGeneration(gen)
+
+    val telemetryLogs: Flow<List<EquipmentTelemetryEntity>> = smartEnergyDao.getAllTelemetryLogs()
+    suspend fun addTelemetryLog(log: EquipmentTelemetryEntity) = smartEnergyDao.insertTelemetryLog(log)
+
+    val plantPerformances: Flow<List<PlantPerformanceEntity>> = smartEnergyDao.getAllPlantPerformances()
+    suspend fun addPlantPerformance(perf: PlantPerformanceEntity) = smartEnergyDao.insertPlantPerformance(perf)
+
+    val smartPredictiveMaintenances: Flow<List<PredictiveMaintenanceEntity>> = smartEnergyDao.getAllPredictiveMaintenances()
+    suspend fun addSmartPredictiveMaintenance(pm: PredictiveMaintenanceEntity) = smartEnergyDao.insertPredictiveMaintenance(pm)
+
+    val chatConversations: Flow<List<ChatConversationEntity>> = smartEnergyDao.getAllChatConversations()
+    suspend fun addChatConversation(chat: ChatConversationEntity) = smartEnergyDao.insertChatConversation(chat)
+
+    val carbonCredits: Flow<List<CarbonCreditEntity>> = smartEnergyDao.getAllCarbonCredits()
+    suspend fun addCarbonCredit(credit: CarbonCreditEntity) = smartEnergyDao.insertCarbonCredit(credit)
+
+    val latestExecutiveAnalytics: Flow<ExecutiveAnalyticsEntity?> = smartEnergyDao.getLatestExecutiveAnalytics()
+    suspend fun addExecutiveAnalytics(analytics: ExecutiveAnalyticsEntity) = smartEnergyDao.insertExecutiveAnalytics(analytics)
 }
 

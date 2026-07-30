@@ -43,6 +43,7 @@ fun EnterpriseSidebarContent(
     val navItems = listOf(
         // Dashboard & Roles
         NavItem("dashboard", "Dashboard Overview", Icons.Outlined.Dashboard, "OVERVIEW"),
+        NavItem("master_workflow", "Master Workflow Engine", Icons.Outlined.AccountTree, "OVERVIEW", "20 Steps"),
         NavItem("role_dashboards", "Role Dashboards Console", Icons.Outlined.SpaceDashboard, "OVERVIEW", "10 Roles"),
         
         // CRM & Pipeline
@@ -52,12 +53,22 @@ fun EnterpriseSidebarContent(
         // Partner Network
         NavItem("partners", "Partner Network & Onboarding", Icons.Outlined.Handshake, "PARTNER NETWORK", "Wizard"),
         
-        // Modules
+        // Operations & Modules
+        NavItem("pricing_engine", "Dynamic Pricing Engine", Icons.Outlined.Calculate, "OPERATIONS", "Phase 4"),
+        NavItem("solar_design", "Solar Design Engine", Icons.Outlined.SolarPower, "OPERATIONS", "Phase 3"),
         NavItem("survey", "Survey Engine", Icons.Outlined.Assignment, "OPERATIONS"),
-        NavItem("quotation", "Quotation Engine", Icons.Outlined.RequestQuote, "OPERATIONS", "18 Pending"),
-        NavItem("projects", "Projects", Icons.Outlined.SolarPower, "OPERATIONS", "128 Running"),
-        NavItem("finance", "Finance & Payouts", Icons.Outlined.Payments, "OPERATIONS"),
-        NavItem("warranty", "Warranty & AMC", Icons.Outlined.VerifiedUser, "OPERATIONS", "512 AMC"),
+        NavItem("quotation", "Quotation Engine", Icons.Outlined.RequestQuote, "OPERATIONS", "Phase 5"),
+        NavItem("projects", "Projects Execution", Icons.Outlined.AccountTree, "OPERATIONS", "Phase 6"),
+        NavItem("finance", "Finance & Payouts", Icons.Outlined.Payments, "OPERATIONS", "Phase 7"),
+        NavItem("after_sales", "After Sales & Service", Icons.Outlined.BuildCircle, "OPERATIONS", "Phase 8"),
+        NavItem("warranty", "Warranty Register", Icons.Outlined.WorkspacePremium, "OPERATIONS"),
+        NavItem("amc", "AMC Contracts", Icons.Outlined.Verified, "OPERATIONS"),
+        NavItem("service_tickets", "Service Tickets", Icons.Outlined.ConfirmationNumber, "OPERATIONS"),
+        NavItem("service_visits", "Field Engineer Visits", Icons.Outlined.Engineering, "OPERATIONS"),
+        NavItem("preventive_maintenance", "Preventive Maintenance", Icons.Outlined.Event, "OPERATIONS"),
+        NavItem("spare_inventory", "Spare Parts Stock", Icons.Outlined.Inventory, "OPERATIONS"),
+        NavItem("warranty_claims", "Warranty Claims RMA", Icons.Outlined.AssignmentReturn, "OPERATIONS"),
+        NavItem("customer_feedback", "Customer Feedback", Icons.Outlined.Grade, "OPERATIONS"),
         
         // Search & Vault
         NavItem("search", "Global Search", Icons.Outlined.Search, "SEARCH & FILES"),
@@ -65,7 +76,12 @@ fun EnterpriseSidebarContent(
 
         // Analytics & AI
         NavItem("reports", "Audit & Compliance", Icons.Outlined.VerifiedUser, "ANALYTICS & COMPLIANCE"),
-        NavItem("ai_assistant", "AI Assistant", Icons.Outlined.AutoAwesome, "INTELLIGENCE", "GenAI"),
+        NavItem("smart_energy", "Smart Energy AI Platform", Icons.Outlined.AutoAwesome, "AI & SCADA PLATFORM", "Phase 9"),
+        NavItem("ai_assistant", "GenAI Assistant", Icons.Outlined.Chat, "AI & SCADA PLATFORM", "Gemini"),
+        NavItem("ai_ocr", "Utility Bill OCR", Icons.Outlined.DocumentScanner, "AI & SCADA PLATFORM", true),
+        NavItem("ai_roof", "Roof CAD & Shading AI", Icons.Outlined.Satellite, "AI & SCADA PLATFORM", true),
+        NavItem("scada_telemetry", "SCADA IoT Live Telemetry", Icons.Outlined.CellTower, "AI & SCADA PLATFORM", true),
+        NavItem("predictive_maint", "Predictive Maintenance AI", Icons.Outlined.Troubleshoot, "AI & SCADA PLATFORM", true),
         
         // System & Governance
         NavItem("org", "Organization & Hubs", Icons.Outlined.Business, "SYSTEM & GOVERNANCE"),

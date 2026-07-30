@@ -1,0 +1,6 @@
+{
+  "name": "Sunite",
+  "description": "Unite Solar Partner Network (USPN) - Enterprise Solar ERP, CRM & Partner Platform",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

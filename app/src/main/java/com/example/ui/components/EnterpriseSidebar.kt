@@ -78,11 +78,26 @@ fun EnterpriseSidebarContent(
         NavItem("reports", "Audit & Compliance", Icons.Outlined.VerifiedUser, "ANALYTICS & COMPLIANCE"),
         NavItem("smart_energy", "Smart Energy AI Platform", Icons.Outlined.AutoAwesome, "AI & SCADA PLATFORM", "Phase 9"),
         NavItem("ai_assistant", "GenAI Assistant", Icons.Outlined.Chat, "AI & SCADA PLATFORM", "Gemini"),
-        NavItem("ai_ocr", "Utility Bill OCR", Icons.Outlined.DocumentScanner, "AI & SCADA PLATFORM", true),
-        NavItem("ai_roof", "Roof CAD & Shading AI", Icons.Outlined.Satellite, "AI & SCADA PLATFORM", true),
-        NavItem("scada_telemetry", "SCADA IoT Live Telemetry", Icons.Outlined.CellTower, "AI & SCADA PLATFORM", true),
-        NavItem("predictive_maint", "Predictive Maintenance AI", Icons.Outlined.Troubleshoot, "AI & SCADA PLATFORM", true),
+        NavItem("ai_ocr", "Utility Bill OCR", Icons.Outlined.DocumentScanner, "AI & SCADA PLATFORM", "OCR"),
+        NavItem("ai_roof", "Roof CAD & Shading AI", Icons.Outlined.Satellite, "AI & SCADA PLATFORM", "CAD"),
+        NavItem("scada_telemetry", "SCADA IoT Live Telemetry", Icons.Outlined.CellTower, "AI & SCADA PLATFORM", "IoT"),
+        NavItem("predictive_maint", "Predictive Maintenance AI", Icons.Outlined.Troubleshoot, "AI & SCADA PLATFORM", "AI"),
         
+        // Mobile Platform & Integrations (Phase 10)
+        NavItem("mobile_platform", "Mobile Ecosystem (8 Apps)", Icons.Outlined.Phonelink, "MOBILE & INTEGRATION", "Phase 10"),
+        NavItem("mobile_devices", "Device Management", Icons.Outlined.Smartphone, "MOBILE & INTEGRATION", "IoT"),
+        NavItem("mobile_push", "Push Center (FCM)", Icons.Outlined.Send, "MOBILE & INTEGRATION", "Push"),
+        NavItem("mobile_integration", "Integration Center", Icons.Outlined.Hub, "MOBILE & INTEGRATION", "Cloud"),
+        NavItem("mobile_gateway", "API Gateway & OAuth", Icons.Outlined.Api, "MOBILE & INTEGRATION", "REST"),
+
+        // Production Backend, DevOps & Cloud Architecture (Phase 11)
+        NavItem("backend_postgres", "PostgreSQL Sync Engine", Icons.Outlined.CloudSync, "BACKEND & DEVOPS", "Phase 11"),
+        NavItem("backend_swagger", "API Gateway & Swagger", Icons.Outlined.Api, "BACKEND & DEVOPS", "OpenAPI"),
+        NavItem("backend_cloud", "Multi-Cloud Storage", Icons.Outlined.Cloud, "BACKEND & DEVOPS", "AWS/GCP"),
+        NavItem("backend_devops", "DevOps & Kubernetes", Icons.Outlined.Dns, "BACKEND & DEVOPS", "K8s"),
+        NavItem("backend_security", "OWASP Security Audit", Icons.Outlined.Shield, "BACKEND & DEVOPS", "SOC2"),
+        NavItem("backend_erd", "Architecture & ERDs", Icons.Outlined.AccountTree, "BACKEND & DEVOPS", "Docs"),
+
         // System & Governance
         NavItem("org", "Organization & Hubs", Icons.Outlined.Business, "SYSTEM & GOVERNANCE"),
         NavItem("users", "User Management", Icons.Outlined.People, "SYSTEM & GOVERNANCE"),

@@ -1,0 +1,81 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 11.5 CRM, Customer & Lead Management APIs",
+    "description": "Postman Collection for NestJS Customers, Leads, and Activities CRM APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "Get All Customers",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/customers?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["api", "v1", "customers"] }
+          }
+        },
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organizationId\": \"{{orgId}}\",\n  \"customerCode\": \"CUST-2026-801\",\n  \"fullName\": \"Reliance Solar Industrial Park\",\n  \"email\": \"contact@reliancesolar.com\",\n  \"mobile\": \"+919822001122\",\n  \"city\": \"Nagpur\",\n  \"state\": \"Maharashtra\",\n  \"sanctionedKw\": 1200.0\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/customers", "host": ["{{baseUrl}}"], "path": ["api", "v1", "customers"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leads",
+      "item": [
+        {
+          "name": "Get All Leads",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/leads?status=SURVEY_COMPLETED", "host": ["{{baseUrl}}"], "path": ["api", "v1", "leads"] }
+          }
+        },
+        {
+          "name": "Create Lead",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leadNumber\": \"LEAD-2026-9500\",\n  \"customerId\": \"{{customerId}}\",\n  \"kwRequirement\": 1200.0,\n  \"roofType\": \"Concrete Flat Rooftop\",\n  \"utilityCompany\": \"MSEDCL\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/leads", "host": ["{{baseUrl}}"], "path": ["api", "v1", "leads"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Activities & Timeline",
+      "item": [
+        {
+          "name": "Log CRM Activity",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"title\": \"Feasibility Discussion\",\n  \"description\": \"In-person meeting discussing 1.2MW rooftop installation.\",\n  \"activityType\": \"MEETING\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/activities", "host": ["{{baseUrl}}"], "path": ["api", "v1", "activities"] }
+          }
+        },
+        {
+          "name": "Get Customer Activity Timeline",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/activities/customer/{{customerId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "activities", "customer", "{{customerId}}"] }
+          }
+        }
+      ]
+    }
+  ]
+}

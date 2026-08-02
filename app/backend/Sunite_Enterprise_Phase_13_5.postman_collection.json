@@ -1,0 +1,181 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 13.5 Customer Self-Service Portal APIs",
+    "description": "Postman API Collection for Phase 13.5 Customer Self-Service Portal including Customer Dashboard, Projects, SCADA, Documents, Payments, Warranty, AMC, Service Desk, Referrals, Notifications, and AI Assistant.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Customer Dashboard",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer/dashboard",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer", "dashboard"]
+        }
+      }
+    },
+    {
+      "name": "Get Customer Projects & Timeline",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer/projects",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer", "projects"]
+        }
+      }
+    },
+    {
+      "name": "Get Live SCADA Telemetry",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer/scada",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer", "scada"]
+        }
+      }
+    },
+    {
+      "name": "Get Document Vault List",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer/documents",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer", "documents"]
+        }
+      }
+    },
+    {
+      "name": "Get Invoices & Billing History",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer/payments",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer", "payments"]
+        }
+      }
+    },
+    {
+      "name": "Process Online Payment",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"invoiceId\": \"INV-2026-042\",\n  \"amount\": 125000,\n  \"paymentMethod\": \"UPI\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer/payments",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer", "payments"]
+        }
+      }
+    },
+    {
+      "name": "Get Equipment Warranty Status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer/warranty",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer", "warranty"]
+        }
+      }
+    },
+    {
+      "name": "Get AMC Plan & Renewal Info",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer/amc",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer", "amc"]
+        }
+      }
+    },
+    {
+      "name": "Create Service Ticket",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"projectId\": \"PROJ-SUN-550KW\",\n  \"category\": \"PANEL_CLEANING\",\n  \"subject\": \"Post-Monsoon Dust Cleaning Request\",\n  \"description\": \"Request water wash team for 550 kWp array.\",\n  \"priority\": \"MEDIUM\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer/service-ticket",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer", "service-ticket"]
+        }
+      }
+    },
+    {
+      "name": "Get Service Desk History",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer/service-history",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer", "service-history"]
+        }
+      }
+    },
+    {
+      "name": "Submit Customer Referral",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"referrerName\": \"Sanand Industrial Polymers\",\n  \"referrerEmail\": \"admin@sanandpolymers.com\",\n  \"friendName\": \"Anand Textile Mills\",\n  \"friendPhone\": \"+91 98250 11223\",\n  \"estimatedCapacityKw\": 200\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer/referral",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer", "referral"]
+        }
+      }
+    },
+    {
+      "name": "Get Notifications Stream",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer/notifications",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer", "notifications"]
+        }
+      }
+    },
+    {
+      "name": "Ask AI Solar Copilot",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"How much solar energy did my plant produce today?\",\n  \"category\": \"GENERATION\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer/ai-assistant",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer", "ai-assistant"]
+        }
+      }
+    }
+  ]
+}

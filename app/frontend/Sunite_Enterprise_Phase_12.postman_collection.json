@@ -1,0 +1,45 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 12 Web Portal & API Consumers",
+    "description": "Postman Collection for Next.js 15 Web Portal API integrations with NestJS Backend (JWT Auth, Role Dashboards, SCADA Telemetry)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Web Portal SSO & Auth",
+      "item": [
+        {
+          "name": "User SSO Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"v.sharma@sunite.com\",\n  \"role\": \"Super Admin\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "auth", "login"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Role Dashboards & SCADA Stream",
+      "item": [
+        {
+          "name": "Get CEO Dashboard Summary",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/health", "host": ["{{baseUrl}}"], "path": ["api", "v1", "health"] }
+          }
+        },
+        {
+          "name": "Get SCADA IoT Telemetry Feed",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/ai-scada/telemetry/live", "host": ["{{baseUrl}}"], "path": ["api", "v1", "ai-scada", "telemetry", "live"] }
+          }
+        }
+      ]
+    }
+  ]
+}

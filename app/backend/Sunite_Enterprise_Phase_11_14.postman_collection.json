@@ -1,0 +1,193 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 11.14 AI, OCR, SCADA Telemetry, Predictive Analytics & Executive Intelligence APIs",
+    "description": "Postman Collection for NestJS AI Copilots, Electricity Bill OCR, GST Certificate OCR, AI Satellite Roof Analysis, SCADA IoT Telemetry, Predictive Maintenance, Carbon ESG Analytics & Executive CEO Dashboard",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "AI Assistant & Copilots",
+      "item": [
+        {
+          "name": "AI Copilot Chat",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"What is the optimal string design and DC/AC ratio for a 100kW rooftop project in Gujarat?\",\n  \"provider\": \"GEMINI\",\n  \"persona\": \"ENGINEERING_COPILOT\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/ai/chat", "host": ["{{baseUrl}}"], "path": ["api", "v1", "ai", "chat"] }
+          }
+        },
+        {
+          "name": "AI Roof Feasibility Analysis",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"imageUrl\": \"https://cdn.sunite.com/satellite/roof_geo_ahmedabad_01.jpg\",\n  \"totalAreaSqm\": 1200\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/ai/roof-analysis", "host": ["{{baseUrl}}"], "path": ["api", "v1", "ai", "roof-analysis"] }
+          }
+        },
+        {
+          "name": "AI Design Recommendation",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requiredCapacityKw\": 100.0,\n  \"roofType\": \"RCC_FLAT\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/ai/design-recommendation", "host": ["{{baseUrl}}"], "path": ["api", "v1", "ai", "design-recommendation"] }
+          }
+        },
+        {
+          "name": "AI Commercial Pricing Suggestion",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"capacityKw\": 100.0,\n  \"customerCategory\": \"COMMERCIAL_INDUSTRIAL\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/ai/pricing-recommendation", "host": ["{{baseUrl}}"], "path": ["api", "v1", "ai", "pricing-recommendation"] }
+          }
+        },
+        {
+          "name": "AI Project Risk Forecast",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"projectId\": \"{{projectId}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/ai/project-risk", "host": ["{{baseUrl}}"], "path": ["api", "v1", "ai", "project-risk"] }
+          }
+        },
+        {
+          "name": "AI Service Fault Diagnosis",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"faultDescription\": \"Inverter error code E031 displayed. Grid connection fault.\",\n  \"deviceModel\": \"Huawei SUN2000-100KTL-M1\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/ai/service-diagnosis", "host": ["{{baseUrl}}"], "path": ["api", "v1", "ai", "service-diagnosis"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "OCR Engine",
+      "item": [
+        {
+          "name": "Electricity Bill OCR",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileUrl\": \"https://cdn.sunite.com/bills/torrent_power_bill_july2026.pdf\",\n  \"discomName\": \"Torrent Power Ltd\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/ai/ocr/electricity-bill", "host": ["{{baseUrl}}"], "path": ["api", "v1", "ai", "ocr", "electricity-bill"] }
+          }
+        },
+        {
+          "name": "GST Certificate OCR",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileUrl\": \"https://cdn.sunite.com/docs/gst_certificate_24AAACS1234A1Z5.pdf\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/ai/ocr/gst", "host": ["{{baseUrl}}"], "path": ["api", "v1", "ai", "ocr", "gst"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "SCADA & IoT Telemetry",
+      "item": [
+        {
+          "name": "Register SCADA Plant",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plantCode\": \"SCD-PLT-1001\",\n  \"plantName\": \"Sanand Industrial Rooftop Solar 100kW\",\n  \"capacityKw\": 100.0,\n  \"location\": \"Sanand, Gujarat\",\n  \"gridVoltage\": 415.0\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/scada/plants", "host": ["{{baseUrl}}"], "path": ["api", "v1", "scada", "plants"] }
+          }
+        },
+        {
+          "name": "Get All SCADA Plants",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/scada/plants", "host": ["{{baseUrl}}"], "path": ["api", "v1", "scada", "plants"] }
+          }
+        },
+        {
+          "name": "Get SCADA Devices",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/scada/devices", "host": ["{{baseUrl}}"], "path": ["api", "v1", "scada", "devices"] }
+          }
+        },
+        {
+          "name": "Get Real-Time Telemetry",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/scada/telemetry", "host": ["{{baseUrl}}"], "path": ["api", "v1", "scada", "telemetry"] }
+          }
+        },
+        {
+          "name": "Get SCADA Alarms",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/scada/alarms", "host": ["{{baseUrl}}"], "path": ["api", "v1", "scada", "alarms"] }
+          }
+        },
+        {
+          "name": "Get SCADA Performance Analytics",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/scada/analytics", "host": ["{{baseUrl}}"], "path": ["api", "v1", "scada", "analytics"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Predictive & Executive Intelligence",
+      "item": [
+        {
+          "name": "Get AI Predictive Maintenance Analysis",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/predictive-maintenance", "host": ["{{baseUrl}}"], "path": ["api", "v1", "predictive-maintenance"] }
+          }
+        },
+        {
+          "name": "Get Carbon Offset & ESG Analytics",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/carbon-analytics", "host": ["{{baseUrl}}"], "path": ["api", "v1", "carbon-analytics"] }
+          }
+        },
+        {
+          "name": "Get CEO Executive AI Dashboard",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/executive-dashboard", "host": ["{{baseUrl}}"], "path": ["api", "v1", "executive-dashboard"] }
+          }
+        }
+      ]
+    }
+  ]
+}

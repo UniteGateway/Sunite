@@ -1,0 +1,201 @@
+{
+  "info": {
+    "name": "Sunite Enterprise Phase 14.2 - Customer Success & Commercial Operations",
+    "description": "Postman API Collection for Sunite Enterprise Phase 14.2 REST APIs including CS Dashboard, Health Metrics, Onboarding, Implementation, Support Tickets, Training Academy, Knowledge Base, Product Feedback, Releases, and Renewals.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Customer Success Dashboard",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer-success/dashboard",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer-success", "dashboard"]
+        }
+      }
+    },
+    {
+      "name": "Customer Health Metrics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer-success/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer-success", "health"]
+        }
+      }
+    },
+    {
+      "name": "Customer Onboarding & CSM Assignment",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenantId\": \"ORG-CUST-105\",\n  \"customerName\": \"Tamil Nadu CleanPower Utility Ltd\",\n  \"csmName\": \"Ananya Sharma\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer-success/onboarding",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer-success", "onboarding"]
+        }
+      }
+    },
+    {
+      "name": "Implementation Projects",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer-success/implementation",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer-success", "implementation"]
+        }
+      }
+    },
+    {
+      "name": "Go-Live Sign-Off",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"projectId\": \"IMP-701\",\n  \"signedBy\": \"Rajesh Mehta (VP Engineering)\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer-success/go-live",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer-success", "go-live"]
+        }
+      }
+    },
+    {
+      "name": "Get Support Tickets",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/support/tickets",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "support", "tickets"]
+        }
+      }
+    },
+    {
+      "name": "Create Support Ticket",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenantId\": \"ORG-PILOT-001\",\n  \"subject\": \"Inverter Gateway Modbus Communication Timeout\",\n  \"priority\": \"HIGH\",\n  \"category\": \"SCADA\",\n  \"description\": \"Inverter register read fails intermittently every 45 minutes.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/support/tickets",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "support", "tickets"]
+        }
+      }
+    },
+    {
+      "name": "Update Support Ticket",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"RESOLVED\",\n  \"resolutionNotes\": \"Re-configured Modbus baud rate to 19200 bps on hardware gateway.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/support/tickets/TCK-9001",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "support", "tickets", "TCK-9001"]
+        }
+      }
+    },
+    {
+      "name": "Get Training Courses",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/training/courses",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "training", "courses"]
+        }
+      }
+    },
+    {
+      "name": "Enroll in Training Course",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenantId\": \"ORG-PILOT-001\",\n  \"userName\": \"Vikram Sharma\",\n  \"courseCode\": \"TRN-101\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/training/enroll",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "training", "enroll"]
+        }
+      }
+    },
+    {
+      "name": "Get Knowledge Base",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/knowledge-base",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "knowledge-base"]
+        }
+      }
+    },
+    {
+      "name": "Submit Product Feedback",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenantId\": \"ORG-PILOT-001\",\n  \"userName\": \"Priya Patel\",\n  \"title\": \"Dark Mode for Dispatch SCADA Center\",\n  \"type\": \"FEATURE_REQUEST\",\n  \"description\": \"Requesting dark theme toggle for night shift monitoring operators.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/product-feedback",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "product-feedback"]
+        }
+      }
+    },
+    {
+      "name": "Get Release Notes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/releases",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "releases"]
+        }
+      }
+    },
+    {
+      "name": "Get Renewals & AMC Forecast",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/renewals",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "renewals"]
+        }
+      }
+    }
+  ]
+}

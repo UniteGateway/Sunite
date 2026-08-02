@@ -1,0 +1,189 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 11.11 Project Execution, Procurement, Inventory, Installation & Commissioning APIs",
+    "description": "Postman Collection for NestJS Project Execution, Order Management, Project Milestones, Procurement, Inventory, Quality Inspection, Testing, Net Metering & Commissioning APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Order Management",
+      "item": [
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/orders", "host": ["{{baseUrl}}"], "path": ["api", "v1", "orders"] }
+          }
+        },
+        {
+          "name": "Convert Quotation to Confirmed Order",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderNumber\": \"ORD-2026-8001\",\n  \"totalAmount\": 5121000,\n  \"remarks\": \"Order confirmed from approved customer quotation.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/orders", "host": ["{{baseUrl}}"], "path": ["api", "v1", "orders"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Project Execution Pipeline",
+      "item": [
+        {
+          "name": "Get All Projects",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/projects?status=IN_PROGRESS", "host": ["{{baseUrl}}"], "path": ["api", "v1", "projects"] }
+          }
+        },
+        {
+          "name": "Create EPC Solar Execution Project",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"projectNumber\": \"PRJ-2026-7001\",\n  \"capacityKw\": 100.0,\n  \"remarks\": \"100kW Industrial Rooftop Solar Project Execution\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/projects", "host": ["{{baseUrl}}"], "path": ["api", "v1", "projects"] }
+          }
+        },
+        {
+          "name": "Assign Project Team & Vendors",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"Assigned Project Manager and EPC Installation Vendor.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/assign", "host": ["{{baseUrl}}"], "path": ["api", "v1", "projects", "{{projectId}}", "assign"] }
+          }
+        },
+        {
+          "name": "Update Execution Stage Milestone",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stage\": \"INSTALLATION_STARTED\",\n  \"remarks\": \"Roof structure mounting started on-site.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/update-stage", "host": ["{{baseUrl}}"], "path": ["api", "v1", "projects", "{{projectId}}", "update-stage"] }
+          }
+        },
+        {
+          "name": "Upload Geo-Tagged Site Photo",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"photoUrl\": \"https://cdn.sunite.com/projects/photos/rooftop_structure.jpg\",\n  \"category\": \"ROOFTOP_STRUCTURE\",\n  \"latitude\": \"18.5204\",\n  \"longitude\": \"73.8567\",\n  \"description\": \"Structure mounting complete with torque verification.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/upload-photo", "host": ["{{baseUrl}}"], "path": ["api", "v1", "projects", "{{projectId}}", "upload-photo"] }
+          }
+        },
+        {
+          "name": "Record Quality Inspection Result",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"structureTorquePassed\": true,\n  \"moduleClampingPassed\": true,\n  \"dcCablingPassed\": true,\n  \"earthingPassed\": true,\n  \"inspectionResult\": \"PASSED\",\n  \"remarks\": \"Quality audit passed with zero defects.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/quality-check", "host": ["{{baseUrl}}"], "path": ["api", "v1", "projects", "{{projectId}}", "quality-check"] }
+          }
+        },
+        {
+          "name": "Record Electrical Testing Results",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"insulationResistanceMohms\": 1000.0,\n  \"openCircuitVoltageVoc\": 850.5,\n  \"shortCircuitCurrentIsc\": 11.2,\n  \"gridSyncPassed\": true,\n  \"remarks\": \"Electrical insulation andVoc testing passed.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/testing", "host": ["{{baseUrl}}"], "path": ["api", "v1", "projects", "{{projectId}}", "testing"] }
+          }
+        },
+        {
+          "name": "Record Plant Commissioning & Net Metering",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"netMeterNumber\": \"NM-MH-2026-9901\",\n  \"discomName\": \"MSEDCL\",\n  \"commissionedCapacityKw\": 100.0,\n  \"remarks\": \"Net meter installed and synchronized to grid.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/commission", "host": ["{{baseUrl}}"], "path": ["api", "v1", "projects", "{{projectId}}", "commission"] }
+          }
+        },
+        {
+          "name": "Record Customer Handover & Warranty Activation",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certificateNumber\": \"CERT-HANDOVER-100KW\",\n  \"warrantyDetails\": \"25-Year PV Module, 10-Year Inverter Warranty Activated\",\n  \"amcDetails\": \"5-Year Comprehensive Operation & Maintenance Activated\",\n  \"remarks\": \"Customer training provided and project handed over.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/handover", "host": ["{{baseUrl}}"], "path": ["api", "v1", "projects", "{{projectId}}", "handover"] }
+          }
+        },
+        {
+          "name": "Close Project",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"Project execution successfully closed.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/projects/{{projectId}}/close", "host": ["{{baseUrl}}"], "path": ["api", "v1", "projects", "{{projectId}}", "close"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Procurement & Inventory",
+      "item": [
+        {
+          "name": "Get Warehouse Inventory",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/inventory", "host": ["{{baseUrl}}"], "path": ["api", "v1", "inventory"] }
+          }
+        },
+        {
+          "name": "Create Purchase Order",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"poNumber\": \"PO-2026-5001\",\n  \"vendorName\": \"Tata Power Solar Systems Ltd\",\n  \"totalAmount\": 2500000,\n  \"remarks\": \"Procurement of 182x 550Wp Mono PERC Modules\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/purchase-orders", "host": ["{{baseUrl}}"], "path": ["api", "v1", "purchase-orders"] }
+          }
+        },
+        {
+          "name": "Create Material Dispatch Voucher",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dispatchNumber\": \"DISP-2026-3001\",\n  \"vehicleNumber\": \"MH-12-AB-1234\",\n  \"driverName\": \"Ramesh Shinde\",\n  \"driverPhone\": \"+919876543210\",\n  \"remarks\": \"Dispatched 182x Modules & 1x 100kW Inverter to site.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/material-dispatch", "host": ["{{baseUrl}}"], "path": ["api", "v1", "material-dispatch"] }
+          }
+        }
+      ]
+    }
+  ]
+}

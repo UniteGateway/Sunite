@@ -6,7 +6,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.data.dao.AfterSalesDao
+import com.example.data.dao.BackendDao
 import com.example.data.dao.CrmDao
+import com.example.data.dao.MobileDao
 import com.example.data.dao.OrgDao
 import com.example.data.dao.PricingDao
 import com.example.data.dao.ProjectExecutionDao
@@ -69,9 +71,20 @@ import kotlinx.coroutines.launch
         PredictiveMaintenanceEntity::class,
         ChatConversationEntity::class,
         CarbonCreditEntity::class,
-        ExecutiveAnalyticsEntity::class
+        ExecutiveAnalyticsEntity::class,
+        MobileDeviceEntity::class,
+        PushNotificationEntity::class,
+        OfflineSyncEntity::class,
+        DeviceSessionEntity::class,
+        DocumentEntity::class,
+        DigitalSignatureEntity::class,
+        PostgresSyncLogEntity::class,
+        ApiGatewayRouteEntity::class,
+        CloudStorageConfigEntity::class,
+        SecurityAuditLogEntity::class,
+        DevOpsDeploymentEntity::class
     ],
-    version = 8,
+    version = 10,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -86,6 +99,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun projectExecutionDao(): ProjectExecutionDao
     abstract fun afterSalesDao(): AfterSalesDao
     abstract fun smartEnergyDao(): SmartEnergyDao
+    abstract fun mobileDao(): MobileDao
+    abstract fun backendDao(): BackendDao
 
     companion object {
         @Volatile
@@ -1067,6 +1082,227 @@ abstract class AppDatabase : RoomDatabase() {
                 generatedAt = "2026-07-30 11:00 AM"
             )
             smartDao.insertExecutiveAnalytics(exec1)
+
+            // Phase 10 Mobile Platform & Integrations Seed Data
+            val mobDao = db.mobileDao()
+
+            val dev1 = MobileDeviceEntity(
+                id = "dev_01",
+                userId = "usr_cust_01",
+                deviceName = "Google Pixel 8 Pro",
+                deviceModel = "Pixel 8 Pro (GC3VE)",
+                osVersion = "Android 15 (AP2A)",
+                appRole = "Customer",
+                pushToken = "fcm_token_cust_880192",
+                biometricEnabled = true,
+                isRegistered = true,
+                registeredAt = "2026-07-01",
+                lastActiveAt = "2026-07-31 10:45 AM"
+            )
+            val dev2 = MobileDeviceEntity(
+                id = "dev_02",
+                userId = "usr_eng_01",
+                deviceName = "Samsung Galaxy S24 Ultra",
+                deviceModel = "SM-S928B",
+                osVersion = "Android 15 (OneUI 7.0)",
+                appRole = "Survey Engineer",
+                pushToken = "fcm_token_eng_330192",
+                biometricEnabled = true,
+                isRegistered = true,
+                registeredAt = "2026-06-15",
+                lastActiveAt = "2026-07-31 11:15 AM"
+            )
+            mobDao.insertMobileDevice(dev1)
+            mobDao.insertMobileDevice(dev2)
+
+            val psh1 = PushNotificationEntity(
+                id = "psh_01",
+                recipientUserId = "usr_cust_01",
+                recipientRole = "Customer",
+                title = "Milestone Approved: Structural Assembly",
+                body = "Your 220kW rooftop solar structure has passed quality inspection. Next step: Inverter Grid Tie.",
+                channel = "Project Updates",
+                payloadJson = "{\"projectId\":\"PRJ-2026-001\",\"action\":\"VIEW_MILESTONE\"}",
+                isRead = false,
+                sentAt = "2026-07-31 09:30 AM"
+            )
+            val psh2 = PushNotificationEntity(
+                id = "psh_02",
+                recipientUserId = "usr_part_01",
+                recipientRole = "Marketing Partner",
+                title = "Commission Payout Transferred: $1,250",
+                body = "Commission for GreenTech Logistics Deal #QT-2026-8801 has been approved and credited via Stripe Instant Payout.",
+                channel = "Commission",
+                payloadJson = "{\"payoutId\":\"PAY-88210\",\"amount\":1250.0}",
+                isRead = true,
+                sentAt = "2026-07-30 04:00 PM"
+            )
+            mobDao.insertPushNotification(psh1)
+            mobDao.insertPushNotification(psh2)
+
+            val sync1 = OfflineSyncEntity(
+                id = "sync_01",
+                userId = "usr_eng_01",
+                entityName = "SiteSurveyRecord",
+                actionType = "INSERT",
+                payloadJson = "{\"surveyId\":\"srv_9921\",\"customerName\":\"Apex Warehouse\",\"roofAreaSqFt\":18000}",
+                status = "SYNCED",
+                retryCount = 0,
+                createdAt = "2026-07-31 08:00 AM",
+                syncedAt = "2026-07-31 08:05 AM"
+            )
+            mobDao.insertOfflineSyncRecord(sync1)
+
+            val doc1 = DocumentEntity(
+                id = "doc_01",
+                title = "220kW Array Single Line Diagram & CAD Layout",
+                documentType = "CAD",
+                fileUrl = "https://sunite.com/docs/cad_layout_220kw.dwg",
+                storageProvider = "AWS S3",
+                version = "v2.1",
+                uploadedByUserId = "usr_eng_01",
+                fileSizeKb = 4280,
+                createdAt = "2026-07-28"
+            )
+            mobDao.insertDocument(doc1)
+
+            val sig1 = DigitalSignatureEntity(
+                id = "sig_01",
+                targetEntityName = "Quotation Approval",
+                targetId = "QT-2026-8801",
+                signerName = "Robert Vance (GreenTech Logistics)",
+                signerRole = "Customer",
+                signatureDataSvg = "M 10 80 Q 52 10 95 80 T 180 80",
+                otpVerified = true,
+                verifiedPhoneEmail = "+1 512 *** 8812",
+                gpsCoordinates = "30.2672° N, 97.7431° W",
+                signedAt = "2026-07-29 02:15 PM"
+            )
+            mobDao.insertDigitalSignature(sig1)
+
+            // Phase 11 Seed Data
+            val bckDao = db.backendDao()
+
+            val psqlLog1 = PostgresSyncLogEntity(
+                id = "pg_sync_01",
+                tableName = "quotations",
+                recordId = "QT-2026-8801",
+                syncDirection = "ROOM_TO_POSTGRES",
+                syncStatus = "SYNCED",
+                latencyMs = 42,
+                postgresCluster = "primary-us-east-1.rds.amazonaws.com",
+                timestamp = "2026-07-31 11:30 AM"
+            )
+            val psqlLog2 = PostgresSyncLogEntity(
+                id = "pg_sync_02",
+                tableName = "scada_telemetry",
+                recordId = "rt_test_01",
+                syncDirection = "POSTGRES_TO_ROOM",
+                syncStatus = "SYNCED",
+                latencyMs = 18,
+                postgresCluster = "primary-us-east-1.rds.amazonaws.com",
+                timestamp = "2026-07-31 11:45 AM"
+            )
+            bckDao.insertPostgresSyncLog(psqlLog1)
+            bckDao.insertPostgresSyncLog(psqlLog2)
+
+            val route1 = ApiGatewayRouteEntity(
+                id = "rt_01",
+                endpointPath = "/api/v1/quotations",
+                httpMethod = "POST",
+                controllerName = "QuotationController",
+                rateLimitRpm = 120,
+                isCachedRedis = false,
+                authRequired = true,
+                swaggerTag = "Quotations & Pricing",
+                status = "ACTIVE"
+            )
+            val route2 = ApiGatewayRouteEntity(
+                id = "rt_02",
+                endpointPath = "/api/v1/scada/live-telemetry",
+                httpMethod = "GET",
+                controllerName = "TelemetryController",
+                rateLimitRpm = 1200,
+                isCachedRedis = true,
+                authRequired = true,
+                swaggerTag = "SCADA & IoT",
+                status = "ACTIVE"
+            )
+            bckDao.insertApiGatewayRoute(route1)
+            bckDao.insertApiGatewayRoute(route2)
+
+            val s3Config = CloudStorageConfigEntity(
+                id = "cloud_s3",
+                provider = "AWS S3",
+                bucketName = "sunite-production-cad-docs",
+                region = "us-east-1",
+                cdnDomain = "https://cdn.sunite.com",
+                defaultEncryption = "AWS-KMS (KMS-SSE)",
+                activeStorageClass = "Standard",
+                totalFilesCount = 14250,
+                storageUsedGb = 428.5
+            )
+            val gcsConfig = CloudStorageConfigEntity(
+                id = "cloud_gcs",
+                provider = "Google Cloud Storage",
+                bucketName = "sunite-gcp-ai-models-backup",
+                region = "us-central1",
+                cdnDomain = "https://storage.googleapis.com/sunite-gcp-ai-models-backup",
+                defaultEncryption = "Google-Managed Encryption Keys",
+                activeStorageClass = "Standard",
+                totalFilesCount = 890,
+                storageUsedGb = 89.2
+            )
+            bckDao.insertCloudStorageConfig(s3Config)
+            bckDao.insertCloudStorageConfig(gcsConfig)
+
+            val secLog1 = SecurityAuditLogEntity(
+                id = "sec_01",
+                eventType = "JWT_TOKEN_REFRESH",
+                userEmail = "admin@sunite.com",
+                ipAddress = "192.168.1.100",
+                userAgent = "SuniteAndroidApp/v1.0 (Android 15; Pixel 8 Pro)",
+                threatSeverity = "LOW",
+                details = "Token refreshed successfully with OAuth2 scope standard_user",
+                timestamp = "2026-07-31 11:20 AM"
+            )
+            val secLog2 = SecurityAuditLogEntity(
+                id = "sec_02",
+                eventType = "OWASP_XSS_BLOCKED",
+                userEmail = "guest_attempt@external.com",
+                ipAddress = "45.132.88.12",
+                userAgent = "curl/7.81.0",
+                threatSeverity = "HIGH",
+                details = "Sanitized script tag in search payload. Request blocked by NestJS Throttler/WAF",
+                timestamp = "2026-07-31 10:12 AM"
+            )
+            bckDao.insertSecurityAuditLog(secLog1)
+            bckDao.insertSecurityAuditLog(secLog2)
+
+            val k8s1 = DevOpsDeploymentEntity(
+                id = "k8s_01",
+                serviceName = "sunite-nestjs-api",
+                environment = "Production (EKS)",
+                dockerImageTag = "v1.0.0-rc9",
+                k8sPodStatus = "Running (12/12 Pods)",
+                helmReleaseVersion = "helm-chart-v1.0.4",
+                memoryUsageMb = 2450.0,
+                cpuUsagePct = 24.5,
+                lastDeployedAt = "2026-07-30 08:00 PM"
+            )
+            val k8s2 = DevOpsDeploymentEntity(
+                id = "k8s_02",
+                serviceName = "sunite-sync-worker",
+                environment = "Production (EKS)",
+                dockerImageTag = "v1.0.0-worker",
+                k8sPodStatus = "Running (4/4 Pods)",
+                helmReleaseVersion = "helm-chart-v1.0.4",
+                memoryUsageMb = 1120.0,
+                cpuUsagePct = 12.0,
+                lastDeployedAt = "2026-07-30 08:00 PM"
+            )
+            bckDao.insertDevOpsDeployment(k8s1)
+            bckDao.insertDevOpsDeployment(k8s2)
         }
     }
 }

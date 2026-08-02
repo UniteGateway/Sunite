@@ -1,0 +1,81 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 11.7 Site Survey & Technical Engineering APIs",
+    "description": "Postman Collection for NestJS Site Survey & Technical Review APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Surveys",
+      "item": [
+        {
+          "name": "Get All Site Surveys",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/surveys?status=SCHEDULED", "host": ["{{baseUrl}}"], "path": ["api", "v1", "surveys"] }
+          }
+        },
+        {
+          "name": "Schedule Site Survey",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"surveyNumber\": \"SURVEY-2026-8001\",\n  \"leadId\": \"{{leadId}}\",\n  \"usableRoofArea\": 520.0,\n  \"azimuthDeg\": 180.0,\n  \"tiltAngleDeg\": 18.5,\n  \"sanctionedLoad\": 120.0,\n  \"roofType\": \"RCC Concrete Flat Roof\",\n  \"discom\": \"MSEDCL\",\n  \"consumerNumber\": \"100987654321\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/surveys", "host": ["{{baseUrl}}"], "path": ["api", "v1", "surveys"] }
+          }
+        },
+        {
+          "name": "Assign Survey Engineer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"engineerId\": \"{{engineerUserId}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/surveys/{{surveyId}}/assign", "host": ["{{baseUrl}}"], "path": ["api", "v1", "surveys", "{{surveyId}}", "assign"] }
+          }
+        },
+        {
+          "name": "Approve Survey Feasibility",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"Rooftop structurally sound. Transformer capacity sufficient for 100kW grid tie-in.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/surveys/{{surveyId}}/approve", "host": ["{{baseUrl}}"], "path": ["api", "v1", "surveys", "{{surveyId}}", "approve"] }
+          }
+        },
+        {
+          "name": "Upload Site Photo",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileUrl\": \"https://cdn.sunite.com/surveys/roof_south_quadrant.jpg\",\n  \"caption\": \"South Quadrant RCC Roof Area\",\n  \"category\": \"ROOF_PHOTO\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/surveys/{{surveyId}}/upload-photo", "host": ["{{baseUrl}}"], "path": ["api", "v1", "surveys", "{{surveyId}}", "upload-photo"] }
+          }
+        },
+        {
+          "name": "Upload Electricity Bill Document",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileUrl\": \"https://cdn.sunite.com/surveys/msedcl_bill_july2026.pdf\",\n  \"caption\": \"MSEDCL Electricity Bill - July 2026\",\n  \"category\": \"ELECTRICITY_BILL\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/surveys/{{surveyId}}/upload-document", "host": ["{{baseUrl}}"], "path": ["api", "v1", "surveys", "{{surveyId}}", "upload-document"] }
+          }
+        }
+      ]
+    }
+  ]
+}

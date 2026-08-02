@@ -1,0 +1,125 @@
+{
+  "info": {
+    "name": "Sunite Enterprise Phase 14.3 - Enterprise Operations Center (NOC/SOC)",
+    "description": "Postman API Collection for Sunite Enterprise Phase 14.3 REST APIs including Global Dashboard, Component Health, Incidents, Security SOC, Backups & DR, Capacity, and SLA Report.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Global Operations Dashboard",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/operations/dashboard",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "operations", "dashboard"]
+        }
+      }
+    },
+    {
+      "name": "Observability Health Checks",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/operations/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "operations", "health"]
+        }
+      }
+    },
+    {
+      "name": "Get System Incidents",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/operations/incidents",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "operations", "incidents"]
+        }
+      }
+    },
+    {
+      "name": "Create System Incident",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"PostgreSQL Connection Pool Exhaustion on SCADA Gateway Ingest\",\n  \"severity\": \"SEV-2\",\n  \"category\": \"DATABASE\",\n  \"assignedLead\": \"Vikram Mehta (Principal SRE)\",\n  \"impactedTenants\": \"ORG-CUST-102 (Gujarat Solar Parks)\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/operations/incidents",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "operations", "incidents"]
+        }
+      }
+    },
+    {
+      "name": "Update System Incident",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"MITIGATED\",\n  \"resolutionNotes\": \"Increased max_connections to 200 and restarted connection pool proxy.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/operations/incidents/INC-2026-801",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "operations", "incidents", "INC-2026-801"]
+        }
+      }
+    },
+    {
+      "name": "Security Operations (SOC) Threats",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/operations/security",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "operations", "security"]
+        }
+      }
+    },
+    {
+      "name": "Backup & Disaster Recovery (DR)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/operations/backups",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "operations", "backups"]
+        }
+      }
+    },
+    {
+      "name": "Capacity & Node Metrics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/operations/capacity",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "operations", "capacity"]
+        }
+      }
+    },
+    {
+      "name": "SLA Performance Report",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/operations/sla",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "operations", "sla"]
+        }
+      }
+    }
+  ]
+}

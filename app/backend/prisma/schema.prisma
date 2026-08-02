@@ -1,0 +1,1653 @@
+// ====================================================
+// SUNITE ENTERPRISE - MASTER POSTGRESQL PRISMA SCHEMA
+// PHASE 11.3 - COMPLETE ENTERPRISE DATA MODEL
+// ====================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum UserRole {
+  SUPER_ADMIN
+  ENTERPRISE_ADMIN
+  BRANCH_MANAGER
+  DEPARTMENT_HEAD
+  PROJECT_MANAGER
+  SOLAR_ENGINEER
+  SURVEY_ENGINEER
+  SALES_EXECUTIVE
+  FIELD_INSTALLER
+  FINANCE_AUDITOR
+  PARTNER_MEMBER
+  FRANCHISE_ADMIN
+  EPC_CONTRACTOR
+  CUSTOMER_USER
+}
+
+enum EntityStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+  SUSPENDED
+  ARCHIVED
+}
+
+enum LeadStatus {
+  NEW_INQUIRY
+  CONTACTED
+  SURVEY_SCHEDULED
+  SURVEY_COMPLETED
+  PROPOSAL_SENT
+  CONTRACT_SIGNED
+  LOST
+  CONVERTED
+}
+
+enum ProjectStage {
+  FEASIBILITY
+  ENGINEERING_DESIGN
+  PERMITTING
+  PROCUREMENT
+  CIVIL_WORK
+  STRUCTURE_MOUNTING
+  ELECTRICAL_WIRING
+  INVERTER_GRID_SYNC
+  COMMISSIONING
+  HANDOVER_COMPLETED
+}
+
+enum OrderStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  IN_FULFILLMENT
+  DISPATCHED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PARTIALLY_PAID
+  FULLY_PAID
+  OVERDUE
+  REFUNDED
+}
+
+enum ServiceTicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+  EMERGENCY
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  PENDING_PARTS
+  RESOLVED
+  CLOSED
+}
+
+enum TelemetryType {
+  SOLAR_GENERATION_KW
+  GRID_EXPORT_KW
+  BATTERY_SOC_PCT
+  INVERTER_TEMP_C
+  FAULT_ALARM
+}
+
+// ==========================================
+// 1. ORGANIZATION & STRUCTURE
+// ==========================================
+
+model Organization {
+  id           String       @id @default(uuid())
+  companyName  String       @map("company_name")
+  legalName    String       @map("legal_name")
+  taxId        String       @unique @map("tax_id") // GSTIN / CIN
+  currency     String       @default("INR")
+  status       EntityStatus @default(ACTIVE)
+  
+  createdBy    String?      @map("created_by")
+  updatedBy    String?      @map("updated_by")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  deletedAt    DateTime?    @map("deleted_at")
+
+  branches     Branch[]
+  departments  Department[]
+  users        User[]
+  customers    Customer[]
+  partners     Partner[]
+  projects     Project[]
+
+  @@index([taxId])
+  @@index([companyName])
+  @@map("organizations")
+}
+
+model Branch {
+  id             String       @id @default(uuid())
+  organizationId String       @map("organization_id")
+  branchCode     String       @unique @map("branch_code")
+  branchName     String       @map("branch_name")
+  city           String
+  state          String
+  postalCode     String       @map("postal_code")
+  address        String
+  status         EntityStatus @default(ACTIVE)
+
+  createdBy      String?      @map("created_by")
+  updatedBy      String?      @map("updated_by")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  deletedAt      DateTime?    @map("deleted_at")
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  departments    Department[]
+  users          User[]
+  projects       Project[]
+
+  @@index([branchCode])
+  @@index([city, state])
+  @@map("branches")
+}
+
+model Department {
+  id             String       @id @default(uuid())
+  organizationId String       @map("organization_id")
+  branchId       String?      @map("branch_id")
+  deptCode       String       @map("dept_code")
+  deptName       String       @map("dept_name")
+  status         EntityStatus @default(ACTIVE)
+
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  deletedAt      DateTime?    @map("deleted_at")
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch         Branch?      @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  users          User[]
+
+  @@unique([organizationId, deptCode])
+  @@map("departments")
+}
+
+// ==========================================
+// 2. USERS, ROLES & PERMISSIONS
+// ==========================================
+
+model User {
+  id               String       @id @default(uuid())
+  organizationId   String       @map("organization_id")
+  branchId         String?      @map("branch_id")
+  departmentId     String?      @map("department_id")
+  email            String       @unique
+  mobile           String       @unique
+  passwordHash     String       @map("password_hash")
+  firstName        String       @map("first_name")
+  lastName         String       @map("last_name")
+  role             UserRole     @default(SOLAR_ENGINEER)
+  status           EntityStatus @default(ACTIVE)
+  mfaEnabled       Boolean      @default(false) @map("mfa_enabled")
+  mfaSecret        String?      @map("mfa_secret")
+  refreshTokenHash String?      @map("refresh_token_hash")
+  lastLoginAt      DateTime?    @map("last_login_at")
+
+  createdBy        String?      @map("created_by")
+  updatedBy        String?      @map("updated_by")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+  deletedAt        DateTime?    @map("deleted_at")
+
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch           Branch?      @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  department       Department?  @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+
+  assignedLeads    Lead[]       @relation("AssignedLeads")
+  assignedSurveys  Survey[]     @relation("SurveyorEngineers")
+  managedProjects  Project[]    @relation("ProjectManagers")
+  auditLogs        AuditLog[]
+  notifications    Notification[]
+
+  @@index([email])
+  @@index([mobile])
+  @@index([organizationId, role])
+  @@map("users")
+}
+
+// ==========================================
+// 3. CUSTOMERS, PARTNERS & VENDORS
+// ==========================================
+
+model Customer {
+  id             String       @id @default(uuid())
+  organizationId String       @map("organization_id")
+  customerCode   String       @unique @map("customer_code")
+  fullName       String       @map("full_name")
+  email          String
+  mobile         String
+  gstin          String?      @map("gstin")
+  city           String
+  state          String
+  sanctionedKw   Float        @default(10.0) @map("sanctioned_kw")
+  status         EntityStatus @default(ACTIVE)
+
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  deletedAt      DateTime?    @map("deleted_at")
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  leads          Lead[]
+  projects       Project[]
+  serviceTickets ServiceTicket[]
+  activities     Activity[]
+
+  @@index([fullName])
+  @@index([mobile])
+  @@index([email])
+  @@index([gstin])
+  @@map("customers")
+}
+
+model Partner {
+  id             String       @id @default(uuid())
+  organizationId String       @map("organization_id")
+  partnerCode    String       @unique @map("partner_code")
+  companyName    String       @map("company_name")
+  partnerType    String       @map("partner_type") // EPC, Franchise, Marketing, Vendor
+  contactPerson  String       @map("contact_person")
+  email          String
+  mobile         String
+  gstin          String?      @map("gstin")
+  status         EntityStatus @default(ACTIVE)
+
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  deletedAt      DateTime?    @map("deleted_at")
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  commissions    Commission[]
+
+  @@index([partnerCode])
+  @@index([gstin])
+  @@map("partners")
+}
+
+// ==========================================
+// 4. LEADS, SURVEYS & SOLAR DESIGN
+// ==========================================
+
+model Lead {
+  id             String     @id @default(uuid())
+  leadNumber     String     @unique @map("lead_number")
+  customerId     String     @map("customer_id")
+  assignedUserId String?    @map("assigned_user_id")
+  kwRequirement  Float      @map("kw_requirement")
+  roofType       String     @map("roof_type")
+  utilityCompany String     @map("utility_company")
+  status         LeadStatus @default(NEW_INQUIRY)
+
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+  deletedAt      DateTime?  @map("deleted_at")
+
+  customer       Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  assignedUser   User?      @relation("AssignedLeads", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  surveys        Survey[]
+  quotations     Quotation[]
+  activities     Activity[]
+
+  @@index([leadNumber])
+  @@index([status])
+  @@map("leads")
+}
+
+model Survey {
+  id             String    @id @default(uuid())
+  surveyNumber   String    @unique @map("survey_number")
+  leadId         String    @map("lead_id")
+  engineerId     String?   @map("engineer_id")
+  usableRoofArea Float     @default(0.0) @map("usable_roof_area")
+  azimuthDeg     Float     @default(180.0) @map("azimuth_deg")
+  tiltAngleDeg   Float     @default(20.0) @map("tilt_angle_deg")
+  sanctionedLoad Float     @default(0.0) @map("sanctioned_load")
+  shadingReport  String?   @map("shading_report")
+  isFeasible     Boolean   @default(true) @map("is_feasible")
+
+  status         String    @default("SCHEDULED") @map("status")
+  latitude       Float?    @map("latitude")
+  longitude      Float?    @map("longitude")
+  roofType       String?   @map("roof_type")
+  discom         String?   @map("discom")
+  consumerNumber String?   @map("consumer_number")
+  remarks        String?   @map("remarks")
+
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  deletedAt      DateTime? @map("deleted_at")
+
+  lead           Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  engineer       User?     @relation("SurveyorEngineers", fields: [engineerId], references: [id], onDelete: SetNull)
+  designs        SolarDesign[]
+
+  @@map("surveys")
+}
+
+model SolarDesign {
+  id                    String    @id @default(uuid())
+  designNumber          String    @unique @default(uuid()) @map("design_number")
+  surveyId              String    @map("survey_id")
+  designVersion         Int       @default(1) @map("design_version")
+  status                String    @default("DRAFT") @map("status")
+  systemCapacityKw      Float     @map("system_capacity_kw")
+  dcCapacityKw          Float     @default(0.0) @map("dc_capacity_kw")
+  acCapacityKw          Float     @default(0.0) @map("ac_capacity_kw")
+  dcAcRatio             Float     @default(1.2) @map("dc_ac_ratio")
+  moduleType            String    @map("module_type")
+  moduleCount           Int       @map("module_count")
+  inverterType          String    @map("inverter_type")
+  inverterCount         Int       @map("inverter_count")
+  performanceRatio      Float     @default(0.78) @map("performance_ratio")
+  cufPercent            Float     @default(19.5) @map("cuf_percent")
+  dailyGenerationKwh    Float     @default(0.0) @map("daily_generation_kwh")
+  monthlyGenerationKwh  Float     @default(0.0) @map("monthly_generation_kwh")
+  estimatedAnnualGenKwh Float     @map("estimated_annual_gen_kwh")
+  co2ReductionTons      Float     @default(0.0) @map("co2_reduction_tons")
+  treesSaved            Int       @default(0) @map("trees_saved")
+  estimatedCost         Float     @default(0.0) @map("estimated_cost")
+  subsidyAmount         Float     @default(0.0) @map("subsidy_amount")
+  roiPercent            Float     @default(0.0) @map("roi_percent")
+  paybackYears          Float     @default(0.0) @map("payback_years")
+  boqJson               String?   @map("boq_json")
+  remarks               String?   @map("remarks")
+
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  deletedAt             DateTime? @map("deleted_at")
+
+  survey                Survey    @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+
+  @@map("solar_designs")
+}
+
+// ==========================================
+// 5. QUOTATIONS, ORDERS & FINANCES
+// ==========================================
+
+model Quotation {
+  id             String     @id @default(uuid())
+  quotationNumber String    @unique @map("quotation_number")
+  leadId         String     @map("lead_id")
+  totalKw        Float      @map("total_kw")
+  baseAmount     Float      @map("base_amount")
+  gstAmount      Float      @map("gst_amount")
+  subsidyAmount  Float      @default(0.0) @map("subsidy_amount")
+  netAmount      Float      @map("net_amount")
+  isApproved     Boolean    @default(false) @map("is_approved")
+
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+
+  lead           Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  orders         Order[]
+
+  @@index([quotationNumber])
+  @@map("quotations")
+}
+
+model Order {
+  id             String      @id @default(uuid())
+  orderNumber    String      @unique @map("order_number")
+  quotationId    String      @map("quotation_id")
+  totalAmount    Float       @map("total_amount")
+  status         OrderStatus @default(DRAFT)
+
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  quotation      Quotation   @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  invoices       Invoice[]
+  projects       Project[]
+
+  @@index([orderNumber])
+  @@map("orders")
+}
+
+model Invoice {
+  id             String        @id @default(uuid())
+  invoiceNumber  String        @unique @map("invoice_number")
+  orderId        String        @map("order_id")
+  subtotal       Float
+  taxAmount      Float         @map("tax_amount")
+  grandTotal     Float         @map("grand_total")
+  paymentStatus  PaymentStatus @default(UNPAID)
+
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  order          Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  payments       Payment[]
+
+  @@index([invoiceNumber])
+  @@map("invoices")
+}
+
+model Payment {
+  id             String   @id @default(uuid())
+  invoiceId      String   @map("invoice_id")
+  txnRefNumber   String   @unique @map("txn_ref_number")
+  amountPaid     Float    @map("amount_paid")
+  paymentMethod  String   @map("payment_method") // UPI, Bank Transfer, Card
+  paidAt         DateTime @default(now()) @map("paid_at")
+
+  invoice        Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model Commission {
+  id             String   @id @default(uuid())
+  partnerId      String   @map("partner_id")
+  amount         Float
+  commissionPct  Float    @map("commission_pct")
+  isDisbursed    Boolean  @default(false) @map("is_disbursed")
+
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  partner        Partner  @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@map("commissions")
+}
+
+// ==========================================
+// 6. PROJECTS, EXECUTION & SCADA
+// ==========================================
+
+model Project {
+  id             String       @id @default(uuid())
+  projectNumber  String       @unique @map("project_number")
+  organizationId String       @map("organization_id")
+  branchId       String?      @map("branch_id")
+  customerId     String       @map("customer_id")
+  orderId        String?      @map("order_id")
+  managerId      String?      @map("manager_id")
+  projectName    String       @map("project_name")
+  systemCapacityKw Float      @map("system_capacity_kw")
+  stage          ProjectStage @default(FEASIBILITY)
+
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  deletedAt      DateTime?    @map("deleted_at")
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch         Branch?      @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  customer       Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  order          Order?       @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  manager        User?        @relation("ProjectManagers", fields: [managerId], references: [id], onDelete: SetNull)
+
+  telemetryLogs  Telemetry[]
+  serviceTickets ServiceTicket[]
+
+  @@index([projectNumber])
+  @@index([stage])
+  @@map("projects")
+}
+
+model Telemetry {
+  id             String        @id @default(uuid())
+  projectId      String        @map("project_id")
+  type           TelemetryType
+  metricValue    Float         @map("metric_value")
+  unit           String        @default("kW")
+  recordedAt     DateTime      @default(now()) @map("recorded_at")
+
+  project        Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, recordedAt])
+  @@map("telemetry")
+}
+
+model ServiceTicket {
+  id             String                @id @default(uuid())
+  ticketNumber   String                @unique @map("ticket_number")
+  customerId     String                @map("customer_id")
+  projectId      String?               @map("project_id")
+  subject        String
+  priority       ServiceTicketPriority @default(MEDIUM)
+  status         TicketStatus          @default(OPEN)
+
+  createdAt      DateTime              @default(now()) @map("created_at")
+  updatedAt      DateTime              @updatedAt @map("updated_at")
+
+  customer       Customer              @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  project        Project?              @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([ticketNumber])
+  @@map("service_tickets")
+}
+
+// ==========================================
+// 7. SYSTEM AUDIT & NOTIFICATIONS
+// ==========================================
+
+model AuditLog {
+  id             String   @id @default(uuid())
+  userId         String?  @map("user_id")
+  action         String
+  resource       String
+  ipAddress      String   @map("ip_address")
+  userAgent      String   @map("user_agent")
+  payloadJson    String?  @map("payload_json")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  user           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@map("audit_logs")
+}
+
+model Notification {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  title          String
+  body           String
+  isRead         Boolean  @default(false) @map("is_read")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+model Activity {
+  id           String    @id @default(uuid())
+  customerId   String?   @map("customer_id")
+  leadId       String?   @map("lead_id")
+  userId       String?   @map("user_id")
+  title        String
+  description  String
+  activityType String    @map("activity_type") // CALL, MEETING, WHATSAPP, EMAIL, NOTE, STAGE_CHANGE
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  customer     Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  lead         Lead?     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([customerId, createdAt])
+  @@index([leadId, createdAt])
+  @@map("activities")
+}
+
+model PricingSheet {
+  id                      String    @id @default(uuid())
+  pricingCode             String    @unique @default(uuid()) @map("pricing_code")
+  designId                String?   @map("design_id")
+  leadId                  String?   @map("lead_id")
+  customerId              String?   @map("customer_id")
+  partnerId               String?   @map("partner_id")
+
+  baseEquipmentCost       Float     @default(0.0) @map("base_equipment_cost")
+  bosCost                 Float     @default(0.0) @map("bos_cost")
+  installationCost        Float     @default(0.0) @map("installation_cost")
+  civilCost               Float     @default(0.0) @map("civil_cost")
+  electricalCost          Float     @default(0.0) @map("electrical_cost")
+  transportCost           Float     @default(0.0) @map("transport_cost")
+
+  marginAmount            Float     @default(0.0) @map("margin_amount")
+  marginPercentage        Float     @default(0.0) @map("margin_percentage")
+  discountAmount          Float     @default(0.0) @map("discount_amount")
+  discountPercentage      Float     @default(0.0) @map("discount_percentage")
+
+  subtotalAmount          Float     @default(0.0) @map("subtotal_amount")
+  gstRate                 Float     @default(13.8) @map("gst_rate")
+  gstAmount               Float     @default(0.0) @map("gst_amount")
+  grossTotal              Float     @default(0.0) @map("gross_total")
+  subsidyAmount           Float     @default(0.0) @map("subsidy_amount")
+  netCustomerContribution Float     @default(0.0) @map("net_customer_contribution")
+
+  status                  String    @default("DRAFT") @map("status")
+  breakdownJson           String?   @map("breakdown_json")
+  remarks                 String?   @map("remarks")
+
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+  deletedAt               DateTime? @map("deleted_at")
+
+  @@map("pricing_sheets")
+}
+
+model Quotation {
+  id                    String    @id @default(uuid())
+  quotationNumber       String    @unique @default(uuid()) @map("quotation_number")
+  version               String    @default("1.0") @map("version")
+  parentQuotationId     String?   @map("parent_quotation_id")
+
+  customerId            String?   @map("customer_id")
+  leadId                String?   @map("lead_id")
+  surveyId              String?   @map("survey_id")
+  designId              String?   @map("design_id")
+  pricingId             String?   @map("pricing_id")
+  partnerId             String?   @map("partner_id")
+  salesExecutiveId      String?   @map("sales_executive_id")
+
+  status                String    @default("DRAFT") @map("status")
+
+  systemCapacityKw      Float     @default(0.0) @map("system_capacity_kw")
+  totalProjectCost      Float     @default(0.0) @map("total_project_cost")
+  gstAmount             Float     @default(0.0) @map("gst_amount")
+  subsidyAmount         Float     @default(0.0) @map("subsidy_amount")
+  netCustomerPrice      Float     @default(0.0) @map("net_customer_price")
+
+  proposalDataJson      String?   @map("proposal_data_json")
+  termsAndConditions    String?   @map("terms_and_conditions")
+  paymentTerms          String?   @map("payment_terms")
+  warrantyDetails       String?   @map("warranty_details")
+  pdfUrl                String?   @map("pdf_url")
+  qrCodeUrl             String?   @map("qr_code_url")
+
+  digitalSignatureJson  String?   @map("digital_signature_json")
+  deliveryLogJson       String?   @map("delivery_log_json")
+  remarks               String?   @map("remarks")
+
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  deletedAt             DateTime? @map("deleted_at")
+
+  @@map("quotations")
+}
+
+model Order {
+  id              String    @id @default(uuid())
+  orderNumber     String    @unique @default(uuid()) @map("order_number")
+  quotationId     String?   @map("quotation_id")
+  customerId      String?   @map("customer_id")
+  leadId          String?   @map("lead_id")
+  partnerId       String?   @map("partner_id")
+
+  totalAmount     Float     @default(0.0) @map("total_amount")
+  status          String    @default("CONFIRMED") @map("status")
+  remarks         String?   @map("remarks")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  @@map("orders")
+}
+
+model Project {
+  id                   String    @id @default(uuid())
+  projectNumber        String    @unique @default(uuid()) @map("project_number")
+  orderId              String?   @map("order_id")
+  quotationId          String?   @map("quotation_id")
+  customerId           String?   @map("customer_id")
+
+  projectManagerId     String?   @map("project_manager_id")
+  epcVendorId          String?   @map("epc_vendor_id")
+  installationVendorId String?   @map("installation_vendor_id")
+  surveyEngineerId     String?   @map("survey_engineer_id")
+
+  stage                String    @default("ORDER_CONFIRMED") @map("stage")
+  status               String    @default("IN_PROGRESS") @map("status")
+  capacityKw           Float     @default(0.0) @map("capacity_kw")
+
+  photosJson           String?   @map("photos_json")
+  qualityChecksJson    String?   @map("quality_checks_json")
+  testingDataJson      String?   @map("testing_data_json")
+  commissioningDataJson String?  @map("commissioning_data_json")
+  handoverDataJson     String?   @map("handover_data_json")
+  remarks              String?   @map("remarks")
+
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+  deletedAt            DateTime? @map("deleted_at")
+
+  @@map("projects")
+}
+
+model PurchaseOrder {
+  id          String    @id @default(uuid())
+  poNumber    String    @unique @default(uuid()) @map("po_number")
+  projectId   String?   @map("project_id")
+  vendorId    String?   @map("vendor_id")
+  vendorName  String?   @map("vendor_name")
+  totalAmount Float     @default(0.0) @map("total_amount")
+  status      String    @default("DRAFT") @map("status")
+  itemsJson   String?   @map("items_json")
+  remarks     String?   @map("remarks")
+
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  @@map("purchase_orders")
+}
+
+model InventoryItem {
+  id                String    @id @default(uuid())
+  sku               String    @unique @default(uuid()) @map("sku")
+  itemName          String    @map("item_name")
+  category          String    @default("SOLAR_MODULES") @map("category")
+  warehouse         String    @default("MAIN_WAREHOUSE") @map("warehouse")
+  totalQuantity     Float     @default(0.0) @map("total_quantity")
+  reservedQuantity  Float     @default(0.0) @map("reserved_quantity")
+  availableQuantity Float     @default(0.0) @map("available_quantity")
+  unit              String    @default("PCS") @map("unit")
+  batchNumber       String?   @map("batch_number")
+  remarks           String?   @map("remarks")
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  deletedAt         DateTime? @map("deleted_at")
+
+  @@map("inventory_items")
+}
+
+model MaterialDispatch {
+  id             String    @id @default(uuid())
+  dispatchNumber String    @unique @default(uuid()) @map("dispatch_number")
+  projectId      String?   @map("project_id")
+  vehicleNumber  String?   @map("vehicle_number")
+  driverName     String?   @map("driver_name")
+  driverPhone    String?   @map("driver_phone")
+  status         String    @default("DISPATCHED") @map("status")
+  itemsJson      String?   @map("items_json")
+  remarks        String?   @map("remarks")
+
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  deletedAt      DateTime? @map("deleted_at")
+
+  @@map("material_dispatches")
+}
+
+model Payment {
+  id              String    @id @default(uuid())
+  paymentNumber   String    @unique @default(uuid()) @map("payment_number")
+  orderId         String?   @map("order_id")
+  projectId       String?   @map("project_id")
+  invoiceId       String?   @map("invoice_id")
+  customerId      String?   @map("customer_id")
+
+  amount          Float     @default(0.0) @map("amount")
+  paymentType     String    @default("ADVANCE") @map("payment_type") // BOOKING, ADVANCE, MILESTONE, FINAL, REFUND
+  paymentMethod   String    @default("ONLINE") @map("payment_method") // ONLINE, BANK_TRANSFER, NEFT, RTGS, UPI, CHEQUE, CASH
+  status          String    @default("COMPLETED") @map("status") // PENDING, COMPLETED, REFUNDED, FAILED
+  transactionRef  String?   @map("transaction_ref")
+  isRefund        Boolean   @default(false) @map("is_refund")
+  remarks         String?   @map("remarks")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  @@map("payments")
+}
+
+model Invoice {
+  id              String    @id @default(uuid())
+  invoiceNumber   String    @unique @default(uuid()) @map("invoice_number")
+  invoiceType     String    @default("TAX_INVOICE") @map("invoice_type") // PROFORMA, TAX_INVOICE, CREDIT_NOTE, DEBIT_NOTE
+  orderId         String?   @map("order_id")
+  projectId       String?   @map("project_id")
+  customerId      String?   @map("customer_id")
+
+  subtotal        Float     @default(0.0) @map("subtotal")
+  cgstAmount      Float     @default(0.0) @map("cgst_amount")
+  sgstAmount      Float     @default(0.0) @map("sgst_amount")
+  igstAmount      Float     @default(0.0) @map("igst_amount")
+  totalGst        Float     @default(0.0) @map("total_gst")
+  totalAmount     Float     @default(0.0) @map("total_amount")
+  tdsAmount       Float     @default(0.0) @map("tds_amount")
+  netPayable      Float     @default(0.0) @map("net_payable")
+
+  status          String    @default("ISSUED") @map("status") // DRAFT, ISSUED, PAID, PARTIALLY_PAID, CANCELLED
+  pdfUrl          String?   @map("pdf_url")
+  qrCodeUrl       String?   @map("qr_code_url")
+  hsnCode         String?   @default("8471") @map("hsn_code")
+  remarks         String?   @map("remarks")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  @@map("invoices")
+}
+
+model Commission {
+  id                String    @id @default(uuid())
+  commissionNumber  String    @unique @default(uuid()) @map("commission_number")
+  partnerId         String?   @map("partner_id")
+  salesExecutiveId  String?   @map("sales_executive_id")
+  projectId         String?   @map("project_id")
+  orderId           String?   @map("order_id")
+
+  partnerType       String    @default("CHANNEL_PARTNER") @map("partner_type") // MARKETING_PARTNER, SALES_EXECUTIVE, FRANCHISE, CHANNEL_PARTNER, REFERRAL_PARTNER
+  totalCommission   Float     @default(0.0) @map("total_commission")
+  releasedAmount    Float     @default(0.0) @map("released_amount")
+  pendingAmount     Float     @default(0.0) @map("pending_amount")
+  status            String    @default("CALCULATED") @map("status") // CALCULATED, PARTIALLY_RELEASED, FULLY_RELEASED
+  stage             String    @default("ADVANCE_RELEASE_50") @map("stage") // ADVANCE_RELEASE_50, FINAL_RELEASE_50
+  remarks           String?   @map("remarks")
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  deletedAt         DateTime? @map("deleted_at")
+
+  @@map("commissions")
+}
+
+model VendorBill {
+  id              String    @id @default(uuid())
+  billNumber      String    @unique @default(uuid()) @map("bill_number")
+  purchaseOrderId String?   @map("purchase_order_id")
+  vendorId        String?   @map("vendor_id")
+  vendorName      String?   @map("vendor_name")
+
+  amount          Float     @default(0.0) @map("amount")
+  taxAmount       Float     @default(0.0) @map("tax_amount")
+  totalAmount     Float     @default(0.0) @map("total_amount")
+  status          String    @default("SUBMITTED") @map("status") // SUBMITTED, APPROVED, SETTLED, REJECTED
+  remarks         String?   @map("remarks")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  @@map("vendor_bills")
+}
+
+model Warranty {
+  id                        String    @id @default(uuid())
+  warrantyNumber            String    @unique @default(uuid()) @map("warranty_number")
+  projectId                 String?   @map("project_id")
+  customerId                String?   @map("customer_id")
+
+  panelWarrantyYears        Int       @default(25) @map("panel_warranty_years")
+  inverterWarrantyYears     Int       @default(10) @map("inverter_warranty_years")
+  batteryWarrantyYears      Int       @default(5) @map("battery_warranty_years")
+  structureWarrantyYears    Int       @default(10) @map("structure_warranty_years")
+  workmanshipWarrantyYears  Int       @default(5) @map("workmanship_warranty_years")
+
+  status                    String    @default("ACTIVE") @map("status") // ACTIVE, EXPIRED, TRANSFERRED, VOID
+  certificateUrl            String?   @map("certificate_url")
+  startDate                 DateTime  @default(now()) @map("start_date")
+  endDate                   DateTime? @map("end_date")
+  remarks                   String?   @map("remarks")
+
+  createdAt                 DateTime  @default(now()) @map("created_at")
+  updatedAt                 DateTime  @updatedAt @map("updated_at")
+  deletedAt                 DateTime? @map("deleted_at")
+
+  @@map("warranties")
+}
+
+model Amc {
+  id              String    @id @default(uuid())
+  amcNumber       String    @unique @default(uuid()) @map("amc_number")
+  projectId       String?   @map("project_id")
+  customerId      String?   @map("customer_id")
+
+  planName        String    @default("GOLD") @map("plan_name") // SILVER, GOLD, PLATINUM, CORPORATE
+  annualPrice     Float     @default(0.0) @map("annual_price")
+  visitsPerYear   Int       @default(4) @map("visits_per_year")
+
+  status          String    @default("ACTIVE") @map("status") // ACTIVE, EXPIRED, RENEWAL_DUE, CANCELLED
+  startDate       DateTime  @default(now()) @map("start_date")
+  endDate         DateTime? @map("end_date")
+  remarks         String?   @map("remarks")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  @@map("amcs")
+}
+
+model ServiceTicket {
+  id                 String    @id @default(uuid())
+  ticketNumber       String    @unique @default(uuid()) @map("ticket_number")
+  projectId          String?   @map("project_id")
+  customerId         String?   @map("customer_id")
+  assignedEngineerId String?   @map("assigned_engineer_id")
+
+  priority           String    @default("MEDIUM") @map("priority") // LOW, MEDIUM, HIGH, CRITICAL
+  status             String    @default("OPEN") @map("status") // OPEN, ASSIGNED, ENGINEER_EN_ROUTE, ON_SITE, WAITING_PARTS, RESOLVED, CLOSED, CANCELLED
+  serviceType        String    @default("INVERTER_FAULT") @map("service_type") // NO_GENERATION, LOW_GENERATION, INVERTER_FAULT, PANEL_DAMAGE, CLEANING, PREVENTIVE_MAINTENANCE, EMERGENCY_BREAKDOWN
+
+  description        String?   @map("description")
+  resolution         String?   @map("resolution")
+  remarks            String?   @map("remarks")
+
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  deletedAt          DateTime? @map("deleted_at")
+
+  @@map("service_tickets")
+}
+
+model ServiceVisit {
+  id                   String    @id @default(uuid())
+  visitNumber          String    @unique @default(uuid()) @map("visit_number")
+  serviceTicketId      String?   @map("service_ticket_id")
+  engineerId           String?   @map("engineer_id")
+
+  checkInTime          DateTime? @map("check_in_time")
+  checkOutTime         DateTime? @map("check_out_time")
+  diagnosis            String?   @map("diagnosis")
+  repairDetails        String?   @map("repair_details")
+  customerSignatureUrl String?   @map("customer_signature_url")
+  photoUrl             String?   @map("photo_url")
+  status               String    @default("COMPLETED") @map("status")
+  remarks              String?   @map("remarks")
+
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+  deletedAt            DateTime? @map("deleted_at")
+
+  @@map("service_visits")
+}
+
+model SparePartItem {
+  id              String    @id @default(uuid())
+  sku             String    @unique @map("sku")
+  partName        String    @map("part_name")
+  category        String    @default("INVERTER_SPARE") @map("category")
+  quantity        Int       @default(0) @map("quantity")
+  reorderLevel    Int       @default(5) @map("reorder_level")
+  unitPrice       Float     @default(0.0) @map("unit_price")
+  warehouse       String    @default("MAIN_WAREHOUSE") @map("warehouse")
+  remarks         String?   @map("remarks")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  @@map("spare_parts")
+}
+
+model WarrantyClaim {
+  id              String    @id @default(uuid())
+  claimNumber     String    @unique @default(uuid()) @map("claim_number")
+  projectId       String?   @map("project_id")
+  customerId      String?   @map("customer_id")
+
+  equipmentType   String    @default("INVERTER") @map("equipment_type")
+  serialNumber    String?   @map("serial_number")
+  claimReason     String?   @map("claim_reason")
+  status          String    @default("SUBMITTED") @map("status") // SUBMITTED, INTERNAL_VERIFICATION, MANUFACTURER_APPROVAL, REPLACEMENT_DISPATCHED, INSTALLED, CLOSED
+  remarks         String?   @map("remarks")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  @@map("warranty_claims")
+}
+
+model CustomerFeedback {
+  id                  String    @id @default(uuid())
+  feedbackNumber      String    @unique @default(uuid()) @map("feedback_number")
+  serviceTicketId     String?   @map("service_ticket_id")
+  customerId          String?   @map("customer_id")
+
+  rating              Int       @default(5) @map("rating")
+  npsScore            Int       @default(10) @map("nps_score")
+  review              String?   @map("review")
+  referralPermission  Boolean   @default(true) @map("referral_permission")
+
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  deletedAt           DateTime? @map("deleted_at")
+
+  @@map("customer_feedbacks")
+}
+
+model ScadaPlant {
+  id                String    @id @default(uuid())
+  plantCode         String    @unique @default(uuid()) @map("plant_code")
+  plantName         String    @map("plant_name")
+  capacityKw        Float     @default(100.0) @map("capacity_kw")
+  location          String?   @map("location")
+  gridVoltage       Float     @default(415.0) @map("grid_voltage")
+  status            String    @default("ONLINE") @map("status")
+  remarks           String?   @map("remarks")
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  deletedAt         DateTime? @map("deleted_at")
+
+  @@map("scada_plants")
+}
+
+model ScadaDevice {
+  id                String    @id @default(uuid())
+  deviceCode        String    @unique @default(uuid()) @map("device_code")
+  scadaPlantId      String?   @map("scada_plant_id")
+  deviceType        String    @default("INVERTER") @map("device_type") // INVERTER, WEATHER_STATION, ENERGY_METER, LOGGER
+  model             String?   @map("model")
+  serialNumber      String?   @map("serial_number")
+  ipAddress         String?   @map("ip_address")
+  protocol          String    @default("MODBUS_TCP") @map("protocol")
+  status            String    @default("ACTIVE") @map("status")
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  deletedAt         DateTime? @map("deleted_at")
+
+  @@map("scada_devices")
+}
+
+model ScadaTelemetry {
+  id                String    @id @default(uuid())
+  scadaPlantId      String?   @map("scada_plant_id")
+  scadaDeviceId     String?   @map("scada_device_id")
+  activePowerKw     Float     @default(0.0) @map("active_power_kw")
+  dcVoltage         Float     @default(0.0) @map("dc_voltage")
+  dcCurrent         Float     @default(0.0) @map("dc_current")
+  gridFrequency     Float     @default(50.0) @map("grid_frequency")
+  performanceRatio  Float     @default(82.5) @map("performance_ratio")
+  cufPct            Float     @default(19.8) @map("cuf_pct")
+  irradianceWm2     Float     @default(850.0) @map("irradiance_wm2")
+  ambientTempC      Float     @default(32.0) @map("ambient_temp_c")
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  @@map("scada_telemetries")
+}
+
+model ScadaAlarm {
+  id                String    @id @default(uuid())
+  alarmCode         String    @unique @default(uuid()) @map("alarm_code")
+  scadaPlantId      String?   @map("scada_plant_id")
+  scadaDeviceId     String?   @map("scada_device_id")
+  alarmType         String    @default("INVERTER_FAULT") @map("alarm_type")
+  severity          String    @default("CRITICAL") @map("severity")
+  message           String    @map("message")
+  status            String    @default("ACTIVE") @map("status") // ACTIVE, ACKNOWLEDGED, CLEARED
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@map("scada_alarms")
+}
+
+model AiInteractionLog {
+  id                String    @id @default(uuid())
+  interactionType   String    @map("interaction_type") // CHAT, OCR, ROOF_ANALYSIS, DESIGN, PRICING, RISK, DIAGNOSIS
+  provider          String    @default("GEMINI") @map("provider") // GEMINI, OPENAI, CLAUDE
+  promptText        String?   @map("prompt_text")
+  responseText      String?   @map("response_text")
+  confidenceScore   Float?    @map("confidence_score")
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  @@map("ai_interaction_logs")
+}
+
+model SyncDeviceSession {
+  id                String    @id @default(uuid())
+  deviceId          String    @unique @map("device_id")
+  userId            String?   @map("user_id")
+  deviceModel       String?   @map("device_model")
+  osVersion         String?   @map("os_version")
+  appVersion        String?   @map("app_version")
+  pushToken         String?   @map("push_token")
+  syncStatus        String    @default("IDLE") @map("sync_status") // IDLE, IN_PROGRESS, SUCCESS, FAILED
+  lastSyncedAt      DateTime? @map("last_synced_at")
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@map("sync_device_sessions")
+}
+
+model SyncConflictLog {
+  id                String    @id @default(uuid())
+  deviceId          String?   @map("device_id")
+  entityName        String    @map("entity_name")
+  entityId          String    @map("entity_id")
+  clientData        String    @map("client_data") // JSON stringified
+  serverData        String    @map("server_data") // JSON stringified
+  resolutionStrategy String   @default("SERVER_WINS") @map("resolution_strategy") // SERVER_WINS, CLIENT_WINS, TIMESTAMP, MANUAL
+  resolved          Boolean   @default(false) @map("resolved")
+  resolvedData      String?   @map("resolved_data")
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  @@map("sync_conflict_logs")
+}
+
+model SyncNotification {
+  id                String    @id @default(uuid())
+  userId            String?   @map("user_id")
+  title             String    @map("title")
+  body              String    @map("body")
+  category          String    @default("GENERAL") @map("category") // SCADA_ALERT, PROJECT_STATUS, SERVICE_TICKETS, CHAT
+  isRead            Boolean   @default(false) @map("is_read")
+  payload           String?   @map("payload") // JSON stringified
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  @@map("sync_notifications")
+}
+
+model MigrationJob {
+  id               String    @id @default(uuid())
+  jobName          String    @map("job_name")
+  fileName         String    @map("file_name")
+  fileType         String    @map("file_type") // EXCEL, CSV, JSON, ZIP
+  entityType       String    @map("entity_type") // CUSTOMER, PARTNER, PROJECT, MASTER_DATA, USER, VENDOR, INVENTORY
+  totalRecords     Int       @default(0) @map("total_records")
+  validRecords     Int       @default(0) @map("valid_records")
+  failedRecords    Int       @default(0) @map("failed_records")
+  duplicateRecords Int       @default(0) @map("duplicate_records")
+  status           String    @default("UPLOADED") @map("status") // UPLOADED, VALIDATING, VALIDATED, IMPORTING, COMPLETED, FAILED, ROLLED_BACK
+  errorSummaryJson String?   @map("error_summary_json")
+  rawDataJson      String?   @map("raw_data_json")
+
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  @@map("migration_jobs")
+}
+
+model MigrationLog {
+  id              String    @id @default(uuid())
+  jobId           String    @map("job_id")
+  recordIndex     Int       @map("record_index")
+  entityType      String    @map("entity_type")
+  entityId        String?   @map("entity_id")
+  action          String    @map("action") // INSERT, UPDATE, SKIP, MERGE, ERROR
+  status          String    @map("status") // SUCCESS, FAILED, WARNING
+  fieldErrorsJson String?   @map("field_errors_json")
+  rawRecordJson   String?   @map("raw_record_json")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@map("migration_logs")
+}
+
+model MigrationRollback {
+  id               String    @id @default(uuid())
+  jobId            String    @map("job_id")
+  entityType       String    @map("entity_type")
+  entityId         String    @map("entity_id")
+  previousStateJson String?  @map("previous_state_json")
+
+  rolledBackAt     DateTime  @default(now()) @map("rolled_back_at")
+
+  @@map("migration_rollbacks")
+}
+
+model OnboardingSession {
+  id                String    @id @default(uuid())
+  onboardingType    String    @map("onboarding_type") // CUSTOMER, ORGANIZATION, PARTNER
+  targetEntityId    String?   @map("target_entity_id")
+  entityName        String    @map("entity_name")
+  currentStep       String    @default("ORGANIZATION_SETUP") @map("current_step")
+  configurationJson String?   @map("configuration_json")
+  status            String    @default("IN_PROGRESS") @map("status")
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@map("onboarding_sessions")
+}
+
+model SavedReport {
+  id              String    @id @default(uuid())
+  reportName      String    @map("report_name")
+  entityType      String    @map("entity_type")
+  columnsJson     String    @map("columns_json")
+  filtersJson     String?   @map("filters_json")
+  groupingJson    String?   @map("grouping_json")
+  sortingJson     String?   @map("sorting_json")
+  chartType       String?   @map("chart_type") // BAR, LINE, PIE, SCATTER, RADAR
+  createdBy       String?   @map("created_by")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("saved_reports")
+}
+
+model ScheduledReport {
+  id              String    @id @default(uuid())
+  reportName      String    @map("report_name")
+  reportType      String    @map("report_type") // DASHBOARD, SALES, FINANCE, PROJECTS, SCADA, SERVICE, CARBON, CUSTOM
+  frequency       String    @map("frequency") // DAILY, WEEKLY, MONTHLY, QUARTERLY, ANNUAL
+  recipientsJson  String    @map("recipients_json")
+  exportFormat    String    @default("PDF") @map("export_format") // PDF, EXCEL, CSV
+  status          String    @default("ACTIVE") @map("status")
+  nextRunAt       DateTime? @map("next_run_at")
+  lastRunAt       DateTime? @map("last_run_at")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("scheduled_reports")
+}
+
+model IntegrationConfig {
+  id              String    @id @default(uuid())
+  category        String    @map("category") // PAYMENT, COMMUNICATION, ERP, GIS, WEATHER, STORAGE, IDENTITY
+  provider        String    @map("provider") // RAZORPAY, PHONEPE, STRIPE, WHATSAPP, TALLY, SAP, GOOGLE_MAPS, OPEN_WEATHER, AWS_S3, GOOGLE_SSO
+  providerName    String    @map("provider_name")
+  apiKey          String?   @map("api_key")
+  secretKey       String?   @map("secret_key")
+  endpointUrl     String?   @map("endpoint_url")
+  isEnabled       Boolean   @default(true) @map("is_enabled")
+  settingsJson    String?   @map("settings_json")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("integration_configs")
+}
+
+model WebhookSubscription {
+  id              String    @id @default(uuid())
+  name            String    @map("name")
+  eventType       String    @map("event_type") // PAYMENT_SUCCESS, INVOICE_GENERATED, PROJECT_STATUS_CHANGE, LEAD_CREATED
+  targetUrl       String    @map("target_url")
+  secret          String?   @map("secret")
+  isEnabled       Boolean   @default(true) @map("is_enabled")
+  retryCount      Int       @default(3) @map("retry_count")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("webhook_subscriptions")
+}
+
+model WebhookLog {
+  id              String    @id @default(uuid())
+  subscriptionId  String?   @map("subscription_id")
+  eventType       String    @map("event_type")
+  payloadJson     String    @map("payload_json")
+  responseStatus  Int?      @map("response_status")
+  responseBody    String?   @map("response_body")
+  attempts        Int       @default(1) @map("attempts")
+  status          String    @default("DELIVERED") @map("status") // DELIVERED, FAILED, RETRYING
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@map("webhook_logs")
+}
+
+model CustomerReferral {
+  id              String    @id @default(uuid())
+  referrerName    String    @map("referrer_name")
+  referrerEmail   String    @map("referrer_email")
+  friendName      String    @map("friend_name")
+  friendPhone     String    @map("friend_phone")
+  friendEmail     String?   @map("friend_email")
+  capacityKw      Float?    @map("capacity_kw")
+  status          String    @default("PENDING") @map("status") // PENDING, CONTACTED, CONVERTED, PAID
+  rewardAmount    Float     @default(5000) @map("reward_amount")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("customer_referrals")
+}
+
+model SaasTenant {
+  id              String    @id @default(uuid())
+  name            String    @map("name")
+  domain          String    @unique @map("domain")
+  plan            String    @default("ENTERPRISE") @map("plan") // COMMUNITY, STARTER, PROFESSIONAL, ENTERPRISE, UTILITY, GOVERNMENT
+  status          String    @default("ACTIVE") @map("status") // ACTIVE, SUSPENDED, TRIAL
+  logoUrl         String?   @map("logo_url")
+  primaryColor    String    @default("#f59e0b") @map("primary_color")
+  whiteLabel      Boolean   @default(true) @map("white_label")
+  maxUsers        Int       @default(100) @map("max_users")
+  managedMw       Float     @default(50.0) @map("managed_mw")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("saas_tenants")
+}
+
+model SaasSubscription {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  planType        String    @map("plan_type") // STARTER, PROFESSIONAL, ENTERPRISE
+  billingCycle    String    @default("ANNUAL") @map("billing_cycle") // MONTHLY, QUARTERLY, HALF_YEARLY, ANNUAL, LIFETIME
+  amountInr       Float     @map("amount_inr")
+  status          String    @default("ACTIVE") @map("status") // ACTIVE, PAST_DUE, CANCELLED
+  startDate       DateTime  @default(now()) @map("start_date")
+  nextBillingDate DateTime  @map("next_billing_date")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("saas_subscriptions")
+}
+
+model CustomerSuccess {
+  id              String   @id @default(uuid())
+  tenantId        String   @map("tenant_id")
+  customerName    String   @map("customer_name")
+  csmName         String   @map("csm_name")
+  lifecycleStage  String   @default("ONBOARDING") @map("lifecycle_stage") // PROSPECT, PILOT, GO_LIVE, ACTIVE, EXPANSION, RENEWAL, ADVOCATE
+  healthScore     Int      @default(90) @map("health_score") // 0-100
+  adoptionScore   Int      @default(85) @map("adoption_score")
+  nrrPercentage   Float    @default(115.0) @map("nrr_percentage")
+  renewalRisk     String   @default("LOW") @map("renewal_risk") // LOW, MEDIUM, HIGH, CRITICAL
+  lastEbrDate     DateTime? @map("last_ebr_date")
+  nextEbrDate     DateTime? @map("next_ebr_date")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("customer_success_profiles")
+}
+
+model ImplementationProject {
+  id              String   @id @default(uuid())
+  tenantId        String   @map("tenant_id")
+  projectName     String   @map("project_name")
+  csmName         String   @map("csm_name")
+  leadEngineer    String   @map("lead_engineer")
+  status          String   @default("IN_PROGRESS") @map("status") // NOT_STARTED, IN_PROGRESS, UAT_TESTING, GO_LIVE_APPROVED, COMPLETED
+  progressPct     Int      @default(65) @map("progress_pct")
+  targetGoLive    DateTime @map("target_go_live")
+  signOffDate     DateTime? @map("sign_off_date")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("implementation_projects")
+}
+
+model TrainingCourse {
+  id              String   @id @default(uuid())
+  code            String   @unique
+  title           String
+  targetRole      String   @map("target_role") // ADMIN, SALES, FIELD_ENGINEER, FINANCE, CUSTOMER
+  durationMinutes Int      @map("duration_minutes")
+  modulesCount    Int      @map("modules_count")
+  passingScore    Int      @default(80) @map("passing_score")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("training_courses")
+}
+
+model TrainingEnrollment {
+  id              String   @id @default(uuid())
+  tenantId        String   @map("tenant_id")
+  userName        String   @map("user_name")
+  courseCode      String   @map("course_code")
+  progressPct     Int      @default(0) @map("progress_pct")
+  status          String   @default("ENROLLED") @map("status") // ENROLLED, IN_PROGRESS, PASSED, CERTIFIED
+  scorePct        Int?     @map("score_pct")
+  completedAt     DateTime? @map("completed_at")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("training_enrollments")
+}
+
+model KnowledgeArticle {
+  id              String   @id @default(uuid())
+  articleId       String   @unique @map("article_id")
+  title           String
+  category        String   // INSTALLATION, SCADA, TROUBLESHOOTING, FINANCE, API_DOCS
+  content         String
+  viewCount       Int      @default(0) @map("view_count")
+  helpfulVotes    Int      @default(0) @map("helpful_votes")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("knowledge_articles")
+}
+
+model ProductFeedback {
+  id              String   @id @default(uuid())
+  tenantId        String   @map("tenant_id")
+  userName        String   @map("user_name")
+  type            String   @default("FEATURE_REQUEST") @map("type") // FEATURE_REQUEST, BUG_REPORT, ENHANCEMENT
+  title           String
+  description     String
+  votes           Int      @default(1)
+  status          String   @default("UNDER_REVIEW") @map("status") // UNDER_REVIEW, PLANNED, IN_DEVELOPMENT, SHIPPED
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("product_feedback")
+}
+
+model FeatureRequest {
+  id              String   @id @default(uuid())
+  featureId       String   @unique @map("feature_id")
+  title           String
+  category        String   // SCADA_IOT, MOBILE_APP, BI_ANALYTICS, TAX_GST, AI_FORECASTING
+  upvotes         Int      @default(0)
+  targetRelease   String   @map("target_release") // v1.1.0, v1.2.0, v2.0.0
+  status          String   @default("PLANNED") @map("status")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("feature_requests")
+}
+
+model ReleaseNote {
+  id              String   @id @default(uuid())
+  version         String   @unique
+  releaseName     String   @map("release_name")
+  releaseDate     DateTime @map("release_date")
+  highlights      String
+  breakingChanges String?  @map("breaking_changes")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("release_notes")
+}
+
+model RenewalForecast {
+  id              String   @id @default(uuid())
+  tenantId        String   @map("tenant_id")
+  customerName    String   @map("customer_name")
+  contractType    String   @map("contract_type") // ENTERPRISE_SAAS, AMC_MAINTENANCE, GRID_LICENSE
+  mrrAmountInr    Float    @map("mrr_amount_inr")
+  arrAmountInr    Float    @map("arr_amount_inr")
+  expiryDate      DateTime @map("expiry_date")
+  renewalLikelihoodPct Int @default(90) @map("renewal_likelihood_pct")
+  status          String   @default("UPCOMING") @map("status") // UPCOMING, RENEWED, RISK_ALERT, LAPSED
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("renewal_forecasts")
+}
+
+model CustomerHealth {
+  id              String   @id @default(uuid())
+  tenantId        String   @map("tenant_id")
+  overallScore    Int      @default(92) @map("overall_score") // 0-100
+  productUsageScore Int    @default(88) @map("product_usage_score")
+  supportScore    Int      @default(95) @map("support_score")
+  npsScore        Int      @default(10) @map("nps_score")
+  csatScore       Float    @default(4.9) @map("csat_score")
+  riskLevel       String   @default("LOW") @map("risk_level")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("customer_health_metrics")
+}
+
+model SystemIncident {
+  id              String   @id @default(uuid())
+  incidentNumber  String   @unique @map("incident_number")
+  title           String
+  severity        String   @default("SEV-2") @map("severity") // SEV-1, SEV-2, SEV-3, SEV-4
+  category        String   @default("SCADA_TELEMETRY") @map("category") // API, DATABASE, REDIS, KUBERNETES, SCADA, SECURITY
+  status          String   @default("OPEN") @map("status") // OPEN, INVESTIGATING, MITIGATED, RESOLVED
+  assignedLead    String   @map("assigned_lead")
+  rootCause       String?  @map("root_cause")
+  resolutionNotes String?  @map("resolution_notes")
+  impactedTenants String   @map("impacted_tenants")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("system_incidents")
+}
+
+model SecurityAlert {
+  id              String   @id @default(uuid())
+  alertId         String   @unique @map("alert_id")
+  threatLevel     String   @default("MEDIUM") @map("threat_level") // LOW, MEDIUM, HIGH, CRITICAL
+  eventType       String   @map("event_type") // FAILED_LOGIN, RATE_LIMIT_EXCEEDED, JWT_INVALID, SUSPICIOUS_IP
+  sourceIp        String   @map("source_ip")
+  tenantId        String?  @map("tenant_id")
+  details         String
+  status          String   @default("ACTIVE") @map("status") // ACTIVE, INVESTIGATING, BLOCKED, DISMISSED
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("security_alerts")
+}
+
+model BackupLog {
+  id              String   @id @default(uuid())
+  jobId           String   @unique @map("job_id")
+  component       String   @map("component") // POSTGRESQL, REDIS, SCADA_TELEMETRY, S3_BLOB
+  backupSizeMb    Float    @map("backup_size_mb")
+  status          String   @default("COMPLETED") @map("status") // IN_PROGRESS, COMPLETED, RESTORE_VERIFIED, FAILED
+  rpoMinutes      Int      @default(5) @map("rpo_minutes")
+  rtoMinutes      Int      @default(15) @map("rto_minutes")
+  verifiedAt      DateTime? @map("verified_at")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("backup_logs")
+}
+
+model CapacityMetric {
+  id              String   @id @default(uuid())
+  nodeName        String   @map("node_name")
+  cpuUsagePct     Float    @map("cpu_usage_pct")
+  memoryUsagePct  Float    @map("memory_usage_pct")
+  diskUsagePct    Float    @map("disk_usage_pct")
+  iopsCount       Int      @map("iops_count")
+  clusterStatus   String   @default("HEALTHY") @map("cluster_status")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("capacity_metrics")
+}
+
+model DeveloperAccount {
+  id              String   @id @default(uuid())
+  developerId     String   @unique @map("developer_id")
+  orgName         String   @map("org_name")
+  email           String   @unique
+  tier            String   @default("TIER_STANDARD") // TIER_STANDARD, TIER_OEM, TIER_ENTERPRISE_PARTNER
+  verification    String   @default("VERIFIED") // PENDING, VERIFIED, REJECTED
+  status          String   @default("ACTIVE") // ACTIVE, SUSPENDED
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("developer_accounts")
+}
+
+model ApiKey {
+  id              String   @id @default(uuid())
+  keyId           String   @unique @map("key_id")
+  developerId     String   @map("developer_id")
+  keySecretHash   String   @map("key_secret_hash")
+  label           String
+  rateLimitRpm    Int      @default(1000) @map("rate_limit_rpm")
+  status          String   @default("ACTIVE")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("api_keys")
+}
+
+model MarketplaceApp {
+  id              String   @id @default(uuid())
+  appId           String   @unique @map("app_id")
+  developerId     String   @map("developer_id")
+  name            String
+  category        String   @map("category") // SOLAR_OEM, BATTERY_STORAGE, EV_CHARGING, SCADA_CONNECTOR, AI_EXTENSION, FINANCE_EXTENSION
+  description     String
+  pricingModel    String   @default("SUBSCRIPTION") @map("pricing_model") // FREE, SUBSCRIPTION, USAGE_BASED
+  priceUsd        Float    @default(0.0) @map("price_usd")
+  rating          Float    @default(4.9)
+  installsCount   Int      @default(0) @map("installs_count")
+  status          String   @default("PUBLISHED") // DRAFT, IN_REVIEW, PUBLISHED, ARCHIVED
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("marketplace_apps")
+}
+
+model PluginExtension {
+  id              String   @id @default(uuid())
+  pluginId        String   @unique @map("plugin_id")
+  name            String
+  author          String
+  version         String   @default("1.0.0")
+  lifecycleState  String   @default("INSTALLED") @map("lifecycle_state") // INSTALLED, RUNNING, STOPPED, ERROR
+  permissions     String   @map("permissions") // READ_TELEMETRY, WRITE_PROJECTS, READ_FINANCE
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("plugin_extensions")
+}
+
+model WebhookSubscription {
+  id              String   @id @default(uuid())
+  subscriptionId  String   @unique @map("subscription_id")
+  developerId     String   @map("developer_id")
+  targetUrl       String   @map("target_url")
+  events          String   @map("events") // scada.telemetry.alarm, crm.lead.created, invoice.paid
+  secretToken     String   @map("secret_token")
+  status          String   @default("ACTIVE")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("webhook_subscriptions")
+}
+
+
+
+
+
+
+
+
+

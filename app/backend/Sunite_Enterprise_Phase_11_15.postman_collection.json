@@ -1,0 +1,122 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 11.15 Mobile Synchronization, Offline Engine, API Gateway & Real-Time Sync APIs",
+    "description": "Postman Collection for NestJS Mobile Device Registration, Offline Queue Sync, Delta Incremental Sync, Conflict Resolution, Document/File Upload Sync, App Notifications & FCM Push Token Registration",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Device Management & Sync Session",
+      "item": [
+        {
+          "name": "Register Mobile Device",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"DEV-ANDROID-99001122\",\n  \"userId\": \"usr-sub-1001\",\n  \"deviceModel\": \"Samsung Galaxy Tab S9 Ultra\",\n  \"osVersion\": \"Android 14 (API 34)\",\n  \"appVersion\": \"v11.15.0\",\n  \"pushToken\": \"fcm_token_sample_xyz987654321\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/sync/register-device", "host": ["{{baseUrl}}"], "path": ["api", "v1", "sync", "register-device"] }
+          }
+        },
+        {
+          "name": "Start Sync Session",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"DEV-ANDROID-99001122\",\n  \"syncType\": \"INCREMENTAL\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/sync/start", "host": ["{{baseUrl}}"], "path": ["api", "v1", "sync", "start"] }
+          }
+        },
+        {
+          "name": "Get Device Sync Status",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/sync/status?deviceId=DEV-ANDROID-99001122", "host": ["{{baseUrl}}"], "path": ["api", "v1", "sync", "status"], "query": [{ "key": "deviceId", "value": "DEV-ANDROID-99001122" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sync Engine (Full & Incremental Delta)",
+      "item": [
+        {
+          "name": "Execute Full Dataset Sync (Room DB Init)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"DEV-ANDROID-99001122\",\n  \"offlineQueue\": []\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/sync/full", "host": ["{{baseUrl}}"], "path": ["api", "v1", "sync", "full"] }
+          }
+        },
+        {
+          "name": "Execute Incremental Delta Sync & Process Offline Mutations",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"DEV-ANDROID-99001122\",\n  \"lastSyncedAt\": \"2026-08-01T00:00:00.000Z\",\n  \"offlineQueue\": [\n    {\n      \"entityName\": \"Leads\",\n      \"action\": \"INSERT\",\n      \"entityId\": \"client-lead-101\",\n      \"payload\": { \"customerName\": \"Ramesh Forge\", \"capacityKw\": 100.0 }\n    },\n    {\n      \"entityName\": \"ServiceTickets\",\n      \"action\": \"UPDATE\",\n      \"entityId\": \"conflict-ticket-901\",\n      \"payload\": { \"status\": \"RESOLVED\", \"resolutionSummary\": \"Replaced 1000V DC SPD Cartridge\" }\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/sync/incremental", "host": ["{{baseUrl}}"], "path": ["api", "v1", "sync", "incremental"] }
+          }
+        },
+        {
+          "name": "Resolve Sync Conflict",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"conflictId\": \"cnf-1001\",\n  \"resolutionStrategy\": \"SERVER_WINS\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/sync/conflicts/resolve", "host": ["{{baseUrl}}"], "path": ["api", "v1", "sync", "conflicts", "resolve"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Document Sync & Push Notifications",
+      "item": [
+        {
+          "name": "Upload Offline Document / Photo",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"DEV-ANDROID-99001122\",\n  \"fileType\": \"SITE_PHOTO\",\n  \"fileName\": \"sanand_roof_mounting_01.jpg\",\n  \"fileContentBase64\": \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD...\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/sync/upload-file", "host": ["{{baseUrl}}"], "path": ["api", "v1", "sync", "upload-file"] }
+          }
+        },
+        {
+          "name": "Get App Notifications",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/notifications?userId=usr-sub-1001", "host": ["{{baseUrl}}"], "path": ["api", "v1", "notifications"], "query": [{ "key": "userId", "value": "usr-sub-1001" }] }
+          }
+        },
+        {
+          "name": "Register Push Notification FCM Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"DEV-ANDROID-99001122\",\n  \"fcmToken\": \"fcm_token_sample_xyz987654321\",\n  \"userId\": \"usr-sub-1001\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/push/register", "host": ["{{baseUrl}}"], "path": ["api", "v1", "push", "register"] }
+          }
+        }
+      ]
+    }
+  ]
+}

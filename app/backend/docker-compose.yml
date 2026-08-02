@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: sunite_app_dev
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://sunite_user:sunite_pass_2026@postgres:5432/sunite_db?schema=public
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: sunite_postgres_dev
+    environment:
+      POSTGRES_USER: sunite_user
+      POSTGRES_PASSWORD: sunite_pass_2026
+      POSTGRES_DB: sunite_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sunite_user -d sunite_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: sunite_redis_dev
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_dev_data:

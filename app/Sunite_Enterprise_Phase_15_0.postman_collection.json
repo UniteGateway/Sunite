@@ -1,0 +1,121 @@
+{
+  "info": {
+    "name": "Sunite Enterprise Phase 15.0 - Open Platform & Marketplace",
+    "description": "Postman API Collection for Sunite Enterprise Phase 15.0 REST APIs including Developer Registration, API Key Generation, Developer Apps, Plugin Management, Marketplace Apps, Directory, and Public API Catalog.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register Developer Organization",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orgName\": \"Sungrow Power Solutions\",\n  \"email\": \"api-support@sungrowpower.com\",\n  \"tier\": \"TIER_OEM\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/developers/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "developers", "register"]
+        }
+      }
+    },
+    {
+      "name": "Generate Developer API Key",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"developerId\": \"DEV-10022\",\n  \"label\": \"Production Telemetry Ingest Key\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/developers/api-key",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "developers", "api-key"]
+        }
+      }
+    },
+    {
+      "name": "Get Developer Apps",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/developers/apps",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "developers", "apps"]
+        }
+      }
+    },
+    {
+      "name": "Register / Install Plugin",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Modbus RTU Custom Telemetry Parser\",\n  \"author\": \"Schneider Electric Partner Dev\",\n  \"version\": \"2.1.0\",\n  \"permissions\": \"READ_TELEMETRY, WRITE_TELEMETRY\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/plugins",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "plugins"]
+        }
+      }
+    },
+    {
+      "name": "Get Installed Plugins",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/plugins",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "plugins"]
+        }
+      }
+    },
+    {
+      "name": "Publish App to Marketplace",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"developerId\": \"DEV-10022\",\n  \"name\": \"CATL BESS Cell Balancing Optimizer\",\n  \"category\": \"BATTERY_STORAGE\",\n  \"description\": \"State-of-Health cell level degradation mitigation.\",\n  \"pricingModel\": \"SUBSCRIPTION\",\n  \"priceUsd\": 49.99\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/marketplace/apps",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "marketplace", "apps"]
+        }
+      }
+    },
+    {
+      "name": "Get Marketplace Apps Directory",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/marketplace",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "marketplace"]
+        }
+      }
+    },
+    {
+      "name": "Get Public API Platform Catalog",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/apis",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "apis"]
+        }
+      }
+    }
+  ]
+}

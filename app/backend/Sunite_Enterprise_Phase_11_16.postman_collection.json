@@ -1,0 +1,54 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 11.16 Production Deployment, Health & Infrastructure Monitoring APIs",
+    "description": "Postman Collection for NestJS Production Health Checks, Kubernetes Liveness & Readiness Probes, System Status Metrics, and Version Endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health & Readiness Probes",
+      "item": [
+        {
+          "name": "Get Application Health Summary",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/health", "host": ["{{baseUrl}}"], "path": ["api", "v1", "health"] }
+          }
+        },
+        {
+          "name": "Kubernetes Readiness Probe",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/readiness", "host": ["{{baseUrl}}"], "path": ["api", "v1", "readiness"] }
+          }
+        },
+        {
+          "name": "Kubernetes Liveness Probe",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/liveness", "host": ["{{baseUrl}}"], "path": ["api", "v1", "liveness"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "System & Version Information",
+      "item": [
+        {
+          "name": "Get System Metrics & Kubernetes Status",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/system/status", "host": ["{{baseUrl}}"], "path": ["api", "v1", "system", "status"] }
+          }
+        },
+        {
+          "name": "Get Application Build Version",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/system/version", "host": ["{{baseUrl}}"], "path": ["api", "v1", "system", "version"] }
+          }
+        }
+      ]
+    }
+  ]
+}

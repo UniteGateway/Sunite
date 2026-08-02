@@ -1,0 +1,181 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 13.4 Enterprise Integration Hub APIs",
+    "description": "Postman API Collection for Phase 13.4 Integration Hub connecting Payment Gateways, WhatsApp, Email, SMS, GIS Maps, Weather, Cloud Storage, ERP Connectors, and Webhooks.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Connect Payment Gateway",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"provider\": \"RAZORPAY\",\n  \"apiKey\": \"rzp_test_key_123\",\n  \"apiSecret\": \"rzp_test_secret_456\",\n  \"environment\": \"SANDBOX\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/integrations/payment/connect",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "integrations", "payment", "connect"]
+        }
+      }
+    },
+    {
+      "name": "Process Payment Webhook",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"provider\": \"RAZORPAY\",\n  \"eventId\": \"evt_1001\",\n  \"eventType\": \"PAYMENT.SUCCESS\",\n  \"signature\": \"valid_hmac_signature_xyz\",\n  \"payload\": { \"amount\": 150000, \"currency\": \"INR\" }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/integrations/payment/webhook",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "integrations", "payment", "webhook"]
+        }
+      }
+    },
+    {
+      "name": "Send WhatsApp Template Message",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"recipientPhoneNumber\": \"+919876543210\",\n  \"templateName\": \"invoice_payment_reminder\",\n  \"languageCode\": \"en_US\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/integrations/whatsapp/send",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "integrations", "whatsapp", "send"]
+        }
+      }
+    },
+    {
+      "name": "Send Email Message",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"to\": [\"client@enterprise.com\"],\n  \"subject\": \"Solar Commissioning Report Ready\",\n  \"bodyHtml\": \"<h1>Your PVsyst Report is ready</h1>\",\n  \"provider\": \"GOOGLE_WORKSPACE\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/integrations/email/send",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "integrations", "email", "send"]
+        }
+      }
+    },
+    {
+      "name": "Send DLT SMS Message",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"recipientPhoneNumber\": \"+919876543210\",\n  \"message\": \"Your Sunite Solar site survey is confirmed for tomorrow 10 AM.\",\n  \"dltTemplateId\": \"DLT-10029381\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/integrations/sms/send",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "integrations", "sms", "send"]
+        }
+      }
+    },
+    {
+      "name": "GIS Geocode Location",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"address\": \"Sanand GIDC Phase 2, Ahmedabad, Gujarat\",\n  \"provider\": \"GOOGLE_MAPS\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/integrations/maps/geocode",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "integrations", "maps", "geocode"]
+        }
+      }
+    },
+    {
+      "name": "Get Weather & Solar Irradiance Data",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"latitude\": 22.9868,\n  \"longitude\": 72.3813,\n  \"provider\": \"NASA_SOLAR\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/integrations/weather",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "integrations", "weather"]
+        }
+      }
+    },
+    {
+      "name": "Generate Storage Presigned Upload URL",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fileName\": \"pvsyst_design.pdf\",\n  \"fileType\": \"application/pdf\",\n  \"fileSizeBytes\": 2048000,\n  \"provider\": \"AWS_S3\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/integrations/storage/upload",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "integrations", "storage", "upload"]
+        }
+      }
+    },
+    {
+      "name": "Register Outgoing Webhook",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"External ERP Listener\",\n  \"eventType\": \"INVOICE_GENERATED\",\n  \"targetUrl\": \"https://external-erp.com/webhooks/invoices\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/integrations/webhooks/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "integrations", "webhooks", "register"]
+        }
+      }
+    },
+    {
+      "name": "Sync ERP & Accounting Data",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"system\": \"TALLY\",\n  \"entityType\": \"INVOICES\",\n  \"action\": \"IMPORT\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/integrations/erp/sync",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "integrations", "erp", "sync"]
+        }
+      }
+    },
+    {
+      "name": "Get Integration Health Status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/integrations/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "integrations", "status"]
+        }
+      }
+    }
+  ]
+}

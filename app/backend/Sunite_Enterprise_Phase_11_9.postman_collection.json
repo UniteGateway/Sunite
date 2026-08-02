@@ -1,0 +1,126 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 11.9 Dynamic Pricing, Commercial Engine, GST, Subsidy & Loan APIs",
+    "description": "Postman Collection for NestJS Dynamic Pricing, Commercial Engine, Margin, Discount, GST, Subsidy & Loan Financial Calculations",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Pricing & Commercial Engine",
+      "item": [
+        {
+          "name": "Get All Pricing Sheets",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/pricing?status=DRAFT", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pricing"] }
+          }
+        },
+        {
+          "name": "Calculate Commercial Solar Pricing",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"designId\": \"{{designId}}\",\n  \"capacityKw\": 100.0,\n  \"category\": \"COMMERCIAL\",\n  \"state\": \"Maharashtra\",\n  \"isBifacial\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/pricing/calculate", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pricing", "calculate"] }
+          }
+        },
+        {
+          "name": "Apply Margin Engine Rules",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pricingId\": \"{{pricingId}}\",\n  \"marginPercentage\": 14.0,\n  \"corporateMarginPct\": 5.0,\n  \"branchMarginPct\": 4.0,\n  \"franchiseMarginPct\": 5.0\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/pricing/apply-margin", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pricing", "apply-margin"] }
+          }
+        },
+        {
+          "name": "Apply Campaign Discount",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pricingId\": \"{{pricingId}}\",\n  \"discountAmount\": 50000,\n  \"campaignCode\": \"SUMMER_PROMO_2026\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/pricing/apply-discount", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pricing", "apply-discount"] }
+          }
+        },
+        {
+          "name": "Calculate State & Inter-State GST",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 4500000,\n  \"state\": \"Maharashtra\",\n  \"isInterState\": false\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/pricing/calculate-gst", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pricing", "calculate-gst"] }
+          }
+        },
+        {
+          "name": "Calculate Government Subsidy",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"capacityKw\": 3.0,\n  \"category\": \"RESIDENTIAL\",\n  \"state\": \"Maharashtra\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/pricing/calculate-subsidy", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pricing", "calculate-subsidy"] }
+          }
+        },
+        {
+          "name": "Calculate Loan EMI Schedule",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"loanAmount\": 3500000,\n  \"interestRate\": 8.5,\n  \"tenureMonths\": 60\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/pricing/calculate-loan", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pricing", "calculate-loan"] }
+          }
+        },
+        {
+          "name": "Approve Commercial Workflow Stage",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pricingId\": \"{{pricingId}}\",\n  \"approvalType\": \"COMMERCIAL\",\n  \"remarks\": \"Commercial margins and discounts verified.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/pricing/approve", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pricing", "approve"] }
+          }
+        },
+        {
+          "name": "Get Internal Cost Sheet",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/pricing/internal-sheet?id={{pricingId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pricing", "internal-sheet"] }
+          }
+        },
+        {
+          "name": "Get Customer Price Quote Sheet",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/pricing/customer-sheet?id={{pricingId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pricing", "customer-sheet"] }
+          }
+        },
+        {
+          "name": "Get Partner Commission Sheet",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/pricing/partner-sheet?id={{pricingId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "pricing", "partner-sheet"] }
+          }
+        }
+      ]
+    }
+  ]
+}

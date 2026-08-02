@@ -1,0 +1,111 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 11.10 Professional Quotation Engine APIs",
+    "description": "Postman Collection for NestJS Professional Quotation Management, PDF Generation, Digital Signatures, Versioning, Approval Workflow & Digital Delivery APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Quotations",
+      "item": [
+        {
+          "name": "Get All Quotations",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/quotations?status=DRAFT", "host": ["{{baseUrl}}"], "path": ["api", "v1", "quotations"] }
+          }
+        },
+        {
+          "name": "Create Solar Quotation Proposal",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quotationNumber\": \"QUOT-2026-9001\",\n  \"version\": \"1.0\",\n  \"systemCapacityKw\": 100.0,\n  \"totalProjectCost\": 4500000,\n  \"gstAmount\": 621000,\n  \"subsidyAmount\": 0,\n  \"netCustomerPrice\": 5121000,\n  \"paymentTerms\": \"10% Advance Booking, 80% Prior to Dispatch, 10% Post Commissioning\",\n  \"warrantyDetails\": \"25 Years Tier-1 PV Module Warranty, 10 Years String Inverter Warranty\",\n  \"termsAndConditions\": \"Valid for 30 days from issuance date.\",\n  \"remarks\": \"Turnkey 100kW Industrial Rooftop Solar Quotation\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/quotations", "host": ["{{baseUrl}}"], "path": ["api", "v1", "quotations"] }
+          }
+        },
+        {
+          "name": "Generate PDF Proposal with QR & Digital Signature",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/quotations/{{quotationId}}/generate-pdf", "host": ["{{baseUrl}}"], "path": ["api", "v1", "quotations", "{{quotationId}}", "generate-pdf"] }
+          }
+        },
+        {
+          "name": "Approve Quotation Commercial Stage",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"approvalType\": \"COMMERCIAL\",\n  \"remarks\": \"Approved for customer proposal release.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/quotations/{{quotationId}}/approve", "host": ["{{baseUrl}}"], "path": ["api", "v1", "quotations", "{{quotationId}}", "approve"] }
+          }
+        },
+        {
+          "name": "Clone Quotation to New Version",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/quotations/{{quotationId}}/clone", "host": ["{{baseUrl}}"], "path": ["api", "v1", "quotations", "{{quotationId}}", "clone"] }
+          }
+        },
+        {
+          "name": "Send Quotation PDF via Email",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"client@enterprise.com\",\n  \"subject\": \"Sunite Enterprise - Turnkey 100kW Solar Proposal\",\n  \"message\": \"Dear Client, Please find attached your custom solar quotation.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/quotations/{{quotationId}}/send-email", "host": ["{{baseUrl}}"], "path": ["api", "v1", "quotations", "{{quotationId}}", "send-email"] }
+          }
+        },
+        {
+          "name": "Send Quotation PDF via WhatsApp",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mobile\": \"+919876543210\",\n  \"message\": \"Your 100kW Solar Installation Proposal is ready.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/quotations/{{quotationId}}/send-whatsapp", "host": ["{{baseUrl}}"], "path": ["api", "v1", "quotations", "{{quotationId}}", "send-whatsapp"] }
+          }
+        },
+        {
+          "name": "Record Customer Acceptance",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"Customer accepted proposal digitally via portal.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/quotations/{{quotationId}}/customer-accept", "host": ["{{baseUrl}}"], "path": ["api", "v1", "quotations", "{{quotationId}}", "customer-accept"] }
+          }
+        },
+        {
+          "name": "Get Quotation Version History",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/quotations/{{quotationId}}/versions", "host": ["{{baseUrl}}"], "path": ["api", "v1", "quotations", "{{quotationId}}", "versions"] }
+          }
+        },
+        {
+          "name": "Get Generated PDF & Verification Details",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/quotations/{{quotationId}}/pdf", "host": ["{{baseUrl}}"], "path": ["api", "v1", "quotations", "{{quotationId}}", "pdf"] }
+          }
+        }
+      ]
+    }
+  ]
+}

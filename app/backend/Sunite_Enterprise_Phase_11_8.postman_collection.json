@@ -1,0 +1,71 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 11.8 Solar Design & Engineering APIs",
+    "description": "Postman Collection for NestJS Solar Design, Engineering Calculations, BOQ, Generation Estimation & ROI APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Solar Designs",
+      "item": [
+        {
+          "name": "Get All Solar Designs",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/designs?status=DRAFT", "host": ["{{baseUrl}}"], "path": ["api", "v1", "designs"] }
+          }
+        },
+        {
+          "name": "Create Solar Design Entry",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"designNumber\": \"DESIGN-2026-6001\",\n  \"surveyId\": \"{{surveyId}}\",\n  \"systemCapacityKw\": 100.0,\n  \"moduleType\": \"550W Mono PERC Half-Cut Bifacial\",\n  \"moduleCount\": 182,\n  \"inverterType\": \"50kW On-Grid String Inverter\",\n  \"inverterCount\": 2,\n  \"dcCapacityKw\": 100.1,\n  \"acCapacityKw\": 100.0,\n  \"dcAcRatio\": 1.2,\n  \"performanceRatio\": 0.78,\n  \"cufPercent\": 19.5,\n  \"estimatedAnnualGenKwh\": 145000\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/designs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "designs"] }
+          }
+        },
+        {
+          "name": "Run Solar Capacity & Engineering Calculations",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usableRoofArea\": 650.0,\n  \"sanctionedLoadKw\": 120.0,\n  \"moduleWattage\": 550,\n  \"tariffPerKwh\": 8.5\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/designs/{{designId}}/calculate", "host": ["{{baseUrl}}"], "path": ["api", "v1", "designs", "{{designId}}", "calculate"] }
+          }
+        },
+        {
+          "name": "Get 12-Month Energy Generation Report",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/designs/{{designId}}/generation", "host": ["{{baseUrl}}"], "path": ["api", "v1", "designs", "{{designId}}", "generation"] }
+          }
+        },
+        {
+          "name": "Get Engineering BOQ",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/designs/{{designId}}/boq", "host": ["{{baseUrl}}"], "path": ["api", "v1", "designs", "{{designId}}", "boq"] }
+          }
+        },
+        {
+          "name": "Approve Solar Design",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"Engineering design approved for procurement and structural installation.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/designs/{{designId}}/approve", "host": ["{{baseUrl}}"], "path": ["api", "v1", "designs", "{{designId}}", "approve"] }
+          }
+        }
+      ]
+    }
+  ]
+}

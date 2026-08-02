@@ -1,0 +1,131 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 13.1 Enterprise QA & End-to-End Audit Suite",
+    "description": "Postman Test Suite for Phase 13.1 Enterprise Validation (21 E2E Workflow Steps, Security Audit, Health Checks, SCADA Telemetry, AI OCR)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. System Health & Infrastructure Validation",
+      "item": [
+        {
+          "name": "Verify API Gateway Health & PostgreSQL/Redis/Sync Gateway Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/health", "host": ["{{baseUrl}}"], "path": ["api", "v1", "health"] }
+          }
+        },
+        {
+          "name": "Verify Prometheus Metrics Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/metrics", "host": ["{{baseUrl}}"], "path": ["metrics"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Auth & RBAC Security Verification",
+      "item": [
+        {
+          "name": "Super Admin Authentication (JWT)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"v.sharma@sunite.com\",\n  \"role\": \"Super Admin\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Forbidden Cross-Tenant RBAC Access Test",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
+              { "key": "X-Tenant-Id", "value": "FORGED_TENANT_ID" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/crm/customers", "host": ["{{baseUrl}}"], "path": ["api", "v1", "crm", "customers"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. End-to-End Workflow Audit Steps",
+      "item": [
+        {
+          "name": "Step 1: Capture Lead",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ramesh Forge Pvt Ltd\",\n  \"email\": \"info@rameshforge.com\",\n  \"phone\": \"+919876543210\",\n  \"address\": \"Sanand GIDC, Ahmedabad\",\n  \"category\": \"Commercial\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/crm/leads", "host": ["{{baseUrl}}"], "path": ["api", "v1", "crm", "leads"] }
+          }
+        },
+        {
+          "name": "Step 2: Convert to Customer Master",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leadId\": \"LD-8041\",\n  \"gstin\": \"24AAAAA0000A1Z5\",\n  \"pan\": \"AAAAA0000A\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/crm/customers", "host": ["{{baseUrl}}"], "path": ["api", "v1", "crm", "customers"] }
+          }
+        },
+        {
+          "name": "Step 3: Site Survey Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"CUST-1001\",\n  \"latitude\": 23.0225,\n  \"longitude\": 72.5714,\n  \"engineerId\": \"usr-survey-1\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/surveys", "host": ["{{baseUrl}}"], "path": ["api", "v1", "surveys"] }
+          }
+        },
+        {
+          "name": "Step 4: Solar Design PVSyst Yield Simulation",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"capacityKw\": 500,\n  \"moduleType\": \"550W Mono PERC\",\n  \"inverterEff\": 0.988\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/engineering/pvsyst", "host": ["{{baseUrl}}"], "path": ["api", "v1", "engineering", "pvsyst"] }
+          }
+        },
+        {
+          "name": "Step 5: Get SCADA Modbus IoT Live Stream",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/ai-scada/telemetry/live", "host": ["{{baseUrl}}"], "path": ["api", "v1", "ai-scada", "telemetry", "live"] }
+          }
+        }
+      ]
+    }
+  ]
+}

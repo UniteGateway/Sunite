@@ -1,0 +1,189 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 13.6 SaaS Multi-Tenant Platform APIs",
+    "description": "Postman API Collection for Phase 13.6 SaaS Platform including Tenant Provisioning, Subscriptions, Licensing, Usage Metering, Invoicing, B2B Marketplace, Reseller Portal, and Customer Success Metrics.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Provision SaaS Tenant",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Adani Green Energy Solar\",\n  \"domain\": \"adani.sunite.io\",\n  \"plan\": \"ENTERPRISE\",\n  \"managedMw\": 250\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/tenants",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "tenants"]
+        }
+      }
+    },
+    {
+      "name": "Get All Tenants",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/tenants",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "tenants"]
+        }
+      }
+    },
+    {
+      "name": "Get Tenant by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/tenants/TENANT-101",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "tenants", "TENANT-101"]
+        }
+      }
+    },
+    {
+      "name": "Create Subscription",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenantId\": \"TENANT-101\",\n  \"planType\": \"ENTERPRISE\",\n  \"billingCycle\": \"ANNUAL\",\n  \"amountInr\": 350000,\n  \"paymentGateway\": \"RAZORPAY\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/subscriptions",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "subscriptions"]
+        }
+      }
+    },
+    {
+      "name": "Get All Subscriptions",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/subscriptions",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "subscriptions"]
+        }
+      }
+    },
+    {
+      "name": "Issue License Key",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenantId\": \"TENANT-101\",\n  \"licenseType\": \"ENTERPRISE\",\n  \"featureFlags\": \"CRM,ERP,SCADA,AI,FINANCE,BI,WHITE_LABEL\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/licenses",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "licenses"]
+        }
+      }
+    },
+    {
+      "name": "Get All Licenses",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/licenses",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "licenses"]
+        }
+      }
+    },
+    {
+      "name": "Generate SaaS Tax Invoice",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"subscriptionId\": \"SUB-201\",\n  \"amountInr\": 350000\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/billing/invoice",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "billing", "invoice"]
+        }
+      }
+    },
+    {
+      "name": "Get Billing History & MRR",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/billing/history",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "billing", "history"]
+        }
+      }
+    },
+    {
+      "name": "Report Usage Metering",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenantId\": \"TENANT-101\",\n  \"activeUsers\": 42,\n  \"scadaDevices\": 85,\n  \"aiRequests\": 1240\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/usage/report",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "usage", "report"]
+        }
+      }
+    },
+    {
+      "name": "Get Solar B2B Marketplace",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/marketplace",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "marketplace"]
+        }
+      }
+    },
+    {
+      "name": "Onboard Reseller Partner",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"partnerName\": \"SunTech CleanEnergy West\",\n  \"contactEmail\": \"partners@suntech.com\",\n  \"commissionPct\": 15\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/resellers",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "resellers"]
+        }
+      }
+    },
+    {
+      "name": "Get Customer Success Health Metrics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/customer-success",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "customer-success"]
+        }
+      }
+    }
+  ]
+}

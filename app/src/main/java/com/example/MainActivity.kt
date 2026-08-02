@@ -55,7 +55,10 @@ class MainActivity : ComponentActivity() {
             pricingDao = db.pricingDao(),
             quotationDao = db.quotationDao(),
             projectExecutionDao = db.projectExecutionDao(),
-            afterSalesDao = db.afterSalesDao()
+            afterSalesDao = db.afterSalesDao(),
+            smartEnergyDao = db.smartEnergyDao(),
+            mobileDao = db.mobileDao(),
+            backendDao = db.backendDao()
         )
 
         setContent {
@@ -285,13 +288,23 @@ fun SuniteMainApp(repository: SuniteRepository) {
                                     icon = Icons.Outlined.VerifiedUser,
                                     primaryActionLabel = "+ New AMC Contract"
                                 )
-                                "ai_assistant" -> com.example.ui.screens.modules.GenericModuleScreen(
-                                    title = "Sunite GenAI Solar Assistant",
-                                    subtitle = "AI-powered proposal generation, solar chat assistance & auto-categorization",
-                                    category = "AI MODULE",
-                                    icon = Icons.Outlined.AutoAwesome,
-                                    primaryActionLabel = "+ Launch AI Session"
-                                )
+                                "smart_energy" -> com.example.ui.screens.modules.SmartEnergyIntelligenceScreen(repository = repository, initialTab = 0)
+                                "ai_ocr" -> com.example.ui.screens.modules.SmartEnergyIntelligenceScreen(repository = repository, initialTab = 1)
+                                "ai_roof" -> com.example.ui.screens.modules.SmartEnergyIntelligenceScreen(repository = repository, initialTab = 2)
+                                "scada_telemetry" -> com.example.ui.screens.modules.SmartEnergyIntelligenceScreen(repository = repository, initialTab = 4)
+                                "predictive_maint" -> com.example.ui.screens.modules.SmartEnergyIntelligenceScreen(repository = repository, initialTab = 6)
+                                "ai_assistant" -> com.example.ui.screens.modules.SmartEnergyIntelligenceScreen(repository = repository, initialTab = 7)
+                                "mobile_platform" -> com.example.ui.screens.mobile.EnterpriseMobilePlatformScreen(repository = repository, initialTab = 0)
+                                "mobile_devices" -> com.example.ui.screens.mobile.EnterpriseMobilePlatformScreen(repository = repository, initialTab = 8)
+                                "mobile_push" -> com.example.ui.screens.mobile.EnterpriseMobilePlatformScreen(repository = repository, initialTab = 8)
+                                "mobile_integration" -> com.example.ui.screens.mobile.EnterpriseMobilePlatformScreen(repository = repository, initialTab = 8)
+                                "mobile_gateway" -> com.example.ui.screens.mobile.EnterpriseMobilePlatformScreen(repository = repository, initialTab = 8)
+                                "backend_postgres" -> com.example.ui.screens.backend.EnterpriseBackendCloudScreen(repository = repository, initialTab = 0)
+                                "backend_swagger" -> com.example.ui.screens.backend.EnterpriseBackendCloudScreen(repository = repository, initialTab = 1)
+                                "backend_cloud" -> com.example.ui.screens.backend.EnterpriseBackendCloudScreen(repository = repository, initialTab = 2)
+                                "backend_devops" -> com.example.ui.screens.backend.EnterpriseBackendCloudScreen(repository = repository, initialTab = 3)
+                                "backend_security" -> com.example.ui.screens.backend.EnterpriseBackendCloudScreen(repository = repository, initialTab = 4)
+                                "backend_erd" -> com.example.ui.screens.backend.EnterpriseBackendCloudScreen(repository = repository, initialTab = 5)
                                 "search" -> GlobalSearchScreen(
                                     repository = repository,
                                     onNavigate = { currentRoute = it }

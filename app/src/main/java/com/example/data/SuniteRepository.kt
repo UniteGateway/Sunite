@@ -1,7 +1,9 @@
 package com.example.data
 
 import com.example.data.dao.AfterSalesDao
+import com.example.data.dao.BackendDao
 import com.example.data.dao.CrmDao
+import com.example.data.dao.MobileDao
 import com.example.data.dao.OrgDao
 import com.example.data.dao.PricingDao
 import com.example.data.dao.ProjectExecutionDao
@@ -23,7 +25,9 @@ class SuniteRepository(
     private val quotationDao: QuotationDao,
     private val projectExecutionDao: ProjectExecutionDao,
     private val afterSalesDao: AfterSalesDao,
-    private val smartEnergyDao: SmartEnergyDao
+    private val smartEnergyDao: SmartEnergyDao,
+    private val mobileDao: MobileDao,
+    private val backendDao: BackendDao
 ) {
     // Organization
     val organization: Flow<OrganizationEntity?> = orgDao.getOrganizationFlow()
@@ -242,5 +246,40 @@ class SuniteRepository(
 
     val latestExecutiveAnalytics: Flow<ExecutiveAnalyticsEntity?> = smartEnergyDao.getLatestExecutiveAnalytics()
     suspend fun addExecutiveAnalytics(analytics: ExecutiveAnalyticsEntity) = smartEnergyDao.insertExecutiveAnalytics(analytics)
+
+    // Phase 10 Mobile Platform & Digital Integration Layer
+    val mobileDevices: Flow<List<MobileDeviceEntity>> = mobileDao.getAllMobileDevices()
+    suspend fun addMobileDevice(device: MobileDeviceEntity) = mobileDao.insertMobileDevice(device)
+
+    val pushNotifications: Flow<List<PushNotificationEntity>> = mobileDao.getAllPushNotifications()
+    suspend fun addPushNotification(notification: PushNotificationEntity) = mobileDao.insertPushNotification(notification)
+
+    val offlineSyncRecords: Flow<List<OfflineSyncEntity>> = mobileDao.getAllOfflineSyncRecords()
+    suspend fun addOfflineSyncRecord(record: OfflineSyncEntity) = mobileDao.insertOfflineSyncRecord(record)
+
+    val deviceSessions: Flow<List<DeviceSessionEntity>> = mobileDao.getAllDeviceSessions()
+    suspend fun addDeviceSession(session: DeviceSessionEntity) = mobileDao.insertDeviceSession(session)
+
+    val digitalDocuments: Flow<List<DocumentEntity>> = mobileDao.getAllDocuments()
+    suspend fun addDigitalDocument(doc: DocumentEntity) = mobileDao.insertDocument(doc)
+
+    val digitalSignatures: Flow<List<DigitalSignatureEntity>> = mobileDao.getAllDigitalSignatures()
+    suspend fun addDigitalSignature(sig: DigitalSignatureEntity) = mobileDao.insertDigitalSignature(sig)
+
+    // Phase 11 Production Backend, Cloud, DevOps & Security
+    val postgresSyncLogs: Flow<List<PostgresSyncLogEntity>> = backendDao.getAllPostgresSyncLogs()
+    suspend fun addPostgresSyncLog(log: PostgresSyncLogEntity) = backendDao.insertPostgresSyncLog(log)
+
+    val apiGatewayRoutes: Flow<List<ApiGatewayRouteEntity>> = backendDao.getAllApiGatewayRoutes()
+    suspend fun addApiGatewayRoute(route: ApiGatewayRouteEntity) = backendDao.insertApiGatewayRoute(route)
+
+    val cloudStorageConfigs: Flow<List<CloudStorageConfigEntity>> = backendDao.getAllCloudStorageConfigs()
+    suspend fun addCloudStorageConfig(config: CloudStorageConfigEntity) = backendDao.insertCloudStorageConfig(config)
+
+    val securityAuditLogs: Flow<List<SecurityAuditLogEntity>> = backendDao.getAllSecurityAuditLogs()
+    suspend fun addSecurityAuditLog(log: SecurityAuditLogEntity) = backendDao.insertSecurityAuditLog(log)
+
+    val devOpsDeployments: Flow<List<DevOpsDeploymentEntity>> = backendDao.getAllDevOpsDeployments()
+    suspend fun addDevOpsDeployment(deployment: DevOpsDeploymentEntity) = backendDao.insertDevOpsDeployment(deployment)
 }
 

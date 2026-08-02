@@ -1,0 +1,105 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 14.1 Pilot Production & Go-Live Validation APIs",
+    "description": "Postman API Collection for Phase 14.1 Pilot Production Go-Live Validation including Pilot Data Provisioning, E2E 19-Step Workflow Verification, Performance Load Benchmarks (5000 users), Security Audit, Integration Health, and Backup Recovery.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Provision Pilot Data & Organization",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"organizationName\": \"Sunite CleanEnergy India Pvt Ltd\",\n  \"headquartersCount\": 1,\n  \"branchOfficesCount\": 3,\n  \"userRolesCount\": 10,\n  \"customersCount\": 100,\n  \"partnersCount\": 25,\n  \"projectsCount\": 50\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/pilot/provision",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "pilot", "provision"]
+        }
+      }
+    },
+    {
+      "name": "2. Validate End-to-End 19-Step Go-Live Workflow",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tenantId\": \"ORG-PILOT-001\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/pilot/validate-workflow",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "pilot", "validate-workflow"]
+        }
+      }
+    },
+    {
+      "name": "3. Verify Enterprise Integrations",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/pilot/integrations",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "pilot", "integrations"]
+        }
+      }
+    },
+    {
+      "name": "4. Execute Performance Load Test (5000 Users)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"concurrentUsers\": 5000,\n  \"durationSeconds\": 60\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/pilot/performance-test",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "pilot", "performance-test"]
+        }
+      }
+    },
+    {
+      "name": "5. Verify Security & Compliance Audit",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/pilot/security-audit",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "pilot", "security-audit"]
+        }
+      }
+    },
+    {
+      "name": "6. Verify Backup & Disaster Recovery Status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/pilot/backup-status",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "pilot", "backup-status"]
+        }
+      }
+    },
+    {
+      "name": "7. Get Realtime Health Dashboard Telemetry",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/pilot/health-dashboard",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "pilot", "health-dashboard"]
+        }
+      }
+    }
+  ]
+}

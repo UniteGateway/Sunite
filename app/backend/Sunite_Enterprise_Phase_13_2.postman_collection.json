@@ -1,0 +1,139 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 13.2 Data Migration & Customer Onboarding Suite",
+    "description": "Postman Test Suite for Phase 13.2 Data Migration, Validation Engine, Duplicate Detection, Rollback Engine & Customer/Organization/Partner Onboarding APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Data Migration Engine",
+      "item": [
+        {
+          "name": "POST Upload Migration Data",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jobName\": \"Industrial Customer Batch Import\",\n  \"fileType\": \"CSV\",\n  \"entityType\": \"CUSTOMER\",\n  \"rawJsonData\": [\n    {\n      \"customerCode\": \"CUST-9001\",\n      \"fullName\": \"Adani Renewable Substation #1\",\n      \"email\": \"energy@adani.com\",\n      \"mobile\": \"+919825099111\",\n      \"gstin\": \"24AAACA1122B1Z3\",\n      \"city\": \"Mundra\",\n      \"state\": \"Gujarat\",\n      \"sanctionedKw\": 1500\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/migration/upload", "host": ["{{baseUrl}}"], "path": ["api", "v1", "migration", "upload"] }
+          }
+        },
+        {
+          "name": "POST Validate Migration Job",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jobId\": \"{{jobId}}\",\n  \"duplicateResolutionStrategy\": \"SKIP\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/migration/validate", "host": ["{{baseUrl}}"], "path": ["api", "v1", "migration", "validate"] }
+          }
+        },
+        {
+          "name": "POST Preview Migration Job",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jobId\": \"{{jobId}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/migration/preview", "host": ["{{baseUrl}}"], "path": ["api", "v1", "migration", "preview"] }
+          }
+        },
+        {
+          "name": "POST Execute Production Import",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jobId\": \"{{jobId}}\",\n  \"duplicateResolutionStrategy\": \"SKIP\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/migration/import", "host": ["{{baseUrl}}"], "path": ["api", "v1", "migration", "import"] }
+          }
+        },
+        {
+          "name": "POST Rollback Migration Job",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jobId\": \"{{jobId}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/migration/rollback", "host": ["{{baseUrl}}"], "path": ["api", "v1", "migration", "rollback"] }
+          }
+        },
+        {
+          "name": "GET Fetch All Migration Jobs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/migration/jobs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "migration", "jobs"] }
+          }
+        },
+        {
+          "name": "GET Fetch Migration Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/migration/logs", "host": ["{{baseUrl}}"], "path": ["api", "v1", "migration", "logs"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Onboarding Workflow Engine",
+      "item": [
+        {
+          "name": "POST Onboard Enterprise Organization",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"Sunite Solar Gujarat Infra Ltd\",\n  \"legalName\": \"Sunite Solar Gujarat Infrastructure Pvt Ltd\",\n  \"gstin\": \"24AAACS9988H1Z5\",\n  \"currency\": \"INR\",\n  \"adminEmail\": \"admin.gujarat@sunite.com\",\n  \"adminFirstName\": \"Vikram\",\n  \"adminLastName\": \"Mehta\",\n  \"adminMobile\": \"+919825000101\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/onboarding/organization", "host": ["{{baseUrl}}"], "path": ["api", "v1", "onboarding", "organization"] }
+          }
+        },
+        {
+          "name": "POST Onboard Customer Master",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Adani Logistics Industrial Park\",\n  \"email\": \"energy.mgmt@adani.com\",\n  \"mobile\": \"+919876500111\",\n  \"gstin\": \"24AAACA1122B1Z3\",\n  \"city\": \"Mundra\",\n  \"state\": \"Gujarat\",\n  \"sanctionedKw\": 1500,\n  \"electricityConsumerNumber\": \"CON-9081726354\",\n  \"discomName\": \"PGVCL Paschim Gujarat Vij\",\n  \"plantCapacityKw\": 1200\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/onboarding/customer", "host": ["{{baseUrl}}"], "path": ["api", "v1", "onboarding", "customer"] }
+          }
+        },
+        {
+          "name": "POST Onboard Partner Ecosystem",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"Bhavnagar Solar EPC Contracting\",\n  \"partnerType\": \"EPC\",\n  \"contactPerson\": \"Karan Solanki\",\n  \"email\": \"karan@bhavnagarsolar.com\",\n  \"mobile\": \"+919898022334\",\n  \"gstin\": \"24AAACB8877E1Z1\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/onboarding/partner", "host": ["{{baseUrl}}"], "path": ["api", "v1", "onboarding", "partner"] }
+          }
+        },
+        {
+          "name": "GET Fetch Onboarding Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/onboarding/status", "host": ["{{baseUrl}}"], "path": ["api", "v1", "onboarding", "status"] }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 11.12 Finance, Payments, Invoicing, GST & Commission Engine APIs",
+    "description": "Postman Collection for NestJS Finance Backend, Payments, Customer Refunds, Tax Invoices, Partner Commission Engine, Vendor Bills, GST Summary & Cashflow Reports",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Payments & Refunds",
+      "item": [
+        {
+          "name": "Record Customer Payment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentNumber\": \"PAY-2026-1001\",\n  \"amount\": 500000,\n  \"paymentType\": \"ADVANCE\",\n  \"paymentMethod\": \"ONLINE\",\n  \"transactionRef\": \"TXN-RAZORPAY-998811\",\n  \"remarks\": \"Advance booking payment for 100kW rooftop project.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/payments", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payments"] }
+          }
+        },
+        {
+          "name": "Get All Payments",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/payments", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payments"] }
+          }
+        },
+        {
+          "name": "Process Payment Refund",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentId\": \"{{paymentId}}\",\n  \"refundAmount\": 50000,\n  \"reason\": \"Partial refund due to capacity re-configuration.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/payments/refund", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payments", "refund"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Invoices Engine",
+      "item": [
+        {
+          "name": "Create Tax Invoice",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"invoiceNumber\": \"INV-2026-4001\",\n  \"invoiceType\": \"TAX_INVOICE\",\n  \"subtotal\": 4500000,\n  \"cgstAmount\": 310500,\n  \"sgstAmount\": 310500,\n  \"hsnCode\": \"8471\",\n  \"remarks\": \"Tax invoice for 100kW rooftop solar supply & installation.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/invoices", "host": ["{{baseUrl}}"], "path": ["api", "v1", "invoices"] }
+          }
+        },
+        {
+          "name": "Auto-Generate Milestone Invoice",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"invoiceType\": \"TAX_INVOICE\",\n  \"remarks\": \"Auto-generated milestone GST tax invoice.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/invoices/generate", "host": ["{{baseUrl}}"], "path": ["api", "v1", "invoices", "generate"] }
+          }
+        },
+        {
+          "name": "Get All Invoices",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/invoices", "host": ["{{baseUrl}}"], "path": ["api", "v1", "invoices"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Commission Engine",
+      "item": [
+        {
+          "name": "Calculate Commission",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dealAmount\": 4500000,\n  \"commissionPct\": 5.0,\n  \"partnerType\": \"CHANNEL_PARTNER\",\n  \"remarks\": \"Channel partner commission calculation.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/commission/calculate", "host": ["{{baseUrl}}"], "path": ["api", "v1", "commission", "calculate"] }
+          }
+        },
+        {
+          "name": "Release Commission Payment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"commissionId\": \"{{commissionId}}\",\n  \"releaseAmount\": 112500,\n  \"stage\": \"ADVANCE_RELEASE_50\",\n  \"remarks\": \"Releasing 50% advance commission upon customer advance payment.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/commission/release", "host": ["{{baseUrl}}"], "path": ["api", "v1", "commission", "release"] }
+          }
+        },
+        {
+          "name": "Get Partner Commission Records",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/commission", "host": ["{{baseUrl}}"], "path": ["api", "v1", "commission"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vendor Bills & Financial Reports",
+      "item": [
+        {
+          "name": "Submit Vendor Bill",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"billNumber\": \"BILL-2026-6001\",\n  \"vendorName\": \"Tata Power Solar Systems Ltd\",\n  \"amount\": 2500000,\n  \"taxAmount\": 450000,\n  \"remarks\": \"Vendor bill for 182x Mono PERC Solar Modules.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/vendor-bills", "host": ["{{baseUrl}}"], "path": ["api", "v1", "vendor-bills"] }
+          }
+        },
+        {
+          "name": "Get GST Liability Summary",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/gst-summary?year=2026&month=7", "host": ["{{baseUrl}}"], "path": ["api", "v1", "gst-summary"] }
+          }
+        },
+        {
+          "name": "Get Enterprise Cashflow Statement",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/cashflow", "host": ["{{baseUrl}}"], "path": ["api", "v1", "cashflow"] }
+          }
+        }
+      ]
+    }
+  ]
+}

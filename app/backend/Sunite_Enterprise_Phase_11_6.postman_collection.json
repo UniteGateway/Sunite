@@ -1,0 +1,73 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 11.6 Partner, EPC & Vendor APIs",
+    "description": "Postman Collection for NestJS Partner Network Management APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Partners",
+      "item": [
+        {
+          "name": "Get All Partners",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/partners", "host": ["{{baseUrl}}"], "path": ["api", "v1", "partners"] }
+          }
+        },
+        {
+          "name": "Get EPC Contractors",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/epc", "host": ["{{baseUrl}}"], "path": ["api", "v1", "epc"] }
+          }
+        },
+        {
+          "name": "Get Installation Vendors",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/vendors", "host": ["{{baseUrl}}"], "path": ["api", "v1", "vendors"] }
+          }
+        },
+        {
+          "name": "Get Survey Engineers",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/survey-engineers", "host": ["{{baseUrl}}"], "path": ["api", "v1", "survey-engineers"] }
+          }
+        },
+        {
+          "name": "Register Partner",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organizationId\": \"{{orgId}}\",\n  \"partnerCode\": \"PARTNER-EPC-05\",\n  \"companyName\": \"GreenTech Solar Solutions Pvt Ltd\",\n  \"partnerType\": \"EPC Contractor\",\n  \"contactPerson\": \"Anil Deshmukh\",\n  \"email\": \"contact@greentechsolar.com\",\n  \"mobile\": \"+919811223344\",\n  \"gstin\": \"27DDDDD3333D1Z8\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/partners", "host": ["{{baseUrl}}"], "path": ["api", "v1", "partners"] }
+          }
+        },
+        {
+          "name": "Approve Partner KYC",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/v1/partners/{{partnerId}}/approve", "host": ["{{baseUrl}}"], "path": ["api", "v1", "partners", "{{partnerId}}", "approve"] }
+          }
+        },
+        {
+          "name": "Assign Coverage Region",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"states\": [\"Maharashtra\", \"Karnataka\"],\n  \"cities\": [\"Pune\", \"Nagpur\", \"Bengaluru\"]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/partners/{{partnerId}}/assign-region", "host": ["{{baseUrl}}"], "path": ["api", "v1", "partners", "{{partnerId}}", "assign-region"] }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,196 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 11.13 Warranty, AMC, Service Tickets, Field Service & Spare Parts APIs",
+    "description": "Postman Collection for NestJS After-Sales Service Platform, Warranty Certificates, AMC Contracts, Field Engineering Visits, Spare Parts Catalog, RMA Claims, NPS Feedback & SLA Engine",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Warranty Management",
+      "item": [
+        {
+          "name": "Activate Solar Plant Warranty",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"warrantyNumber\": \"WRN-2026-9001\",\n  \"panelWarrantyYears\": 25,\n  \"inverterWarrantyYears\": 10,\n  \"batteryWarrantyYears\": 5,\n  \"structureWarrantyYears\": 10,\n  \"workmanshipWarrantyYears\": 5,\n  \"remarks\": \"Automatic warranty certificate activated upon commissioning.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/warranty", "host": ["{{baseUrl}}"], "path": ["api", "v1", "warranty"] }
+          }
+        },
+        {
+          "name": "Get All Plant Warranties",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/warranty", "host": ["{{baseUrl}}"], "path": ["api", "v1", "warranty"] }
+          }
+        },
+        {
+          "name": "Update / Transfer Warranty",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ACTIVE\",\n  \"remarks\": \"Warranty ownership transferred to new industrial property buyer.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/warranty/{{warrantyId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "warranty", "{{warrantyId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AMC Contracts Engine",
+      "item": [
+        {
+          "name": "Create AMC Contract",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amcNumber\": \"AMC-2026-3001\",\n  \"planName\": \"GOLD\",\n  \"annualPrice\": 45000,\n  \"visitsPerYear\": 4,\n  \"remarks\": \"Gold AMC Plan with quarterly preventive maintenance and thermal imaging.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/amc", "host": ["{{baseUrl}}"], "path": ["api", "v1", "amc"] }
+          }
+        },
+        {
+          "name": "Get All AMC Contracts",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/amc", "host": ["{{baseUrl}}"], "path": ["api", "v1", "amc"] }
+          }
+        },
+        {
+          "name": "Renew / Upgrade AMC Plan",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planName\": \"PLATINUM\",\n  \"status\": \"ACTIVE\",\n  \"remarks\": \"AMC upgraded to Platinum with 24/7 emergency dispatch SLA.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/amc/{{amcId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "amc", "{{amcId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Service Ticketing & Field Dispatch",
+      "item": [
+        {
+          "name": "Create Service Ticket",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ticketNumber\": \"TKT-2026-5001\",\n  \"priority\": \"HIGH\",\n  \"serviceType\": \"INVERTER_FAULT\",\n  \"description\": \"Inverter error code E031 displayed. Grid disconnection fault.\",\n  \"remarks\": \"Customer logged ticket via mobile portal.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/service-tickets", "host": ["{{baseUrl}}"], "path": ["api", "v1", "service-tickets"] }
+          }
+        },
+        {
+          "name": "Get All Service Tickets",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/service-tickets", "host": ["{{baseUrl}}"], "path": ["api", "v1", "service-tickets"] }
+          }
+        },
+        {
+          "name": "Assign Field Engineer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assignedEngineerId\": \"ENG-USER-1002\",\n  \"remarks\": \"Assigned Senior Field Electrical Technician.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/service-tickets/{{ticketId}}/assign", "host": ["{{baseUrl}}"], "path": ["api", "v1", "service-tickets", "{{ticketId}}", "assign"] }
+          }
+        },
+        {
+          "name": "Record Site Visit & Customer Signature",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diagnosis\": \"Blown DC SPD module from transient lightning surge.\",\n  \"repairDetails\": \"Replaced 1000V DC SPD module and reset grid parameters.\",\n  \"customerSignatureUrl\": \"https://cdn.sunite.com/service/signatures/sig_5001.png\",\n  \"photoUrl\": \"https://cdn.sunite.com/service/photos/repair_5001.jpg\",\n  \"remarks\": \"Plant restarted and generated 85kW AC successfully.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/service-tickets/{{ticketId}}/visit", "host": ["{{baseUrl}}"], "path": ["api", "v1", "service-tickets", "{{ticketId}}", "visit"] }
+          }
+        },
+        {
+          "name": "Close Service Ticket",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resolution\": \"Replaced DC SPD fuse link and verified full grid sync.\",\n  \"remarks\": \"Ticket closed after customer verbal & digital sign-off.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/service-tickets/{{ticketId}}/close", "host": ["{{baseUrl}}"], "path": ["api", "v1", "service-tickets", "{{ticketId}}", "close"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Spare Parts, Claims & Feedback Engine",
+      "item": [
+        {
+          "name": "Add Spare Part SKU",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"SPD-DC-1000V\",\n  \"partName\": \"1000V DC Surge Protection Device (SPD) Module Type 2\",\n  \"category\": \"SPD\",\n  \"quantity\": 50,\n  \"reorderLevel\": 10,\n  \"unitPrice\": 2500,\n  \"warehouse\": \"MAIN_WAREHOUSE\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/spare-parts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "spare-parts"] }
+          }
+        },
+        {
+          "name": "Get Warehouse Spare Parts Catalog",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/spare-parts", "host": ["{{baseUrl}}"], "path": ["api", "v1", "spare-parts"] }
+          }
+        },
+        {
+          "name": "Submit Equipment Warranty Claim (RMA)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claimNumber\": \"CLM-2026-8001\",\n  \"equipmentType\": \"INVERTER\",\n  \"serialNumber\": \"SN-INV-2025-889912\",\n  \"claimReason\": \"IGBT internal failure causing DC bus overvoltage trip.\",\n  \"remarks\": \"RMA claim logged with inverter OEM manufacturer.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/warranty-claims", "host": ["{{baseUrl}}"], "path": ["api", "v1", "warranty-claims"] }
+          }
+        },
+        {
+          "name": "Submit Customer Feedback & Rating",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5,\n  \"npsScore\": 10,\n  \"review\": \"Engineer arrived within 1 hour and fixed inverter fault promptly.\",\n  \"referralPermission\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/customer-feedback", "host": ["{{baseUrl}}"], "path": ["api", "v1", "customer-feedback"] }
+          }
+        },
+        {
+          "name": "Get Field Service SLA Compliance Report",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/v1/sla-report", "host": ["{{baseUrl}}"], "path": ["api", "v1", "sla-report"] }
+          }
+        }
+      ]
+    }
+  ]
+}

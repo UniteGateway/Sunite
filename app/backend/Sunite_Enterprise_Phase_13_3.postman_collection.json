@@ -1,0 +1,147 @@
+{
+  "info": {
+    "name": "Sunite Enterprise - Phase 13.3 Business Intelligence & Analytics APIs",
+    "description": "Postman API Collection for Phase 13.3 BI, Executive Dashboards, Custom Reports, and Export Engines.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Executive CEO Dashboard",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/reports/dashboard",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "reports", "dashboard"]
+        }
+      }
+    },
+    {
+      "name": "Get Sales Analytics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/reports/sales",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "reports", "sales"]
+        }
+      }
+    },
+    {
+      "name": "Get Finance Analytics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/reports/finance",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "reports", "finance"]
+        }
+      }
+    },
+    {
+      "name": "Get Project Analytics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/reports/projects",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "reports", "projects"]
+        }
+      }
+    },
+    {
+      "name": "Get SCADA Analytics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/reports/scada",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "reports", "scada"]
+        }
+      }
+    },
+    {
+      "name": "Get Service Analytics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/reports/service",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "reports", "service"]
+        }
+      }
+    },
+    {
+      "name": "Get Carbon Analytics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/reports/carbon",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "reports", "carbon"]
+        }
+      }
+    },
+    {
+      "name": "Execute Custom Report",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reportName\": \"Q3 Commercial Solar Sales\",\n  \"entityType\": \"SALES\",\n  \"columns\": [\"Lead Source\", \"Deal Value\", \"Conversion Rate\", \"Executive\"],\n  \"chartType\": \"BAR\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/reports/custom",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "reports", "custom"]
+        }
+      }
+    },
+    {
+      "name": "Export Report (PDF / Excel / CSV)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reportType\": \"DASHBOARD\",\n  \"format\": \"PDF\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/reports/export",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "reports", "export"]
+        }
+      }
+    },
+    {
+      "name": "Schedule Recurring Report",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reportName\": \"Weekly CEO Summary\",\n  \"reportType\": \"DASHBOARD\",\n  \"frequency\": \"WEEKLY\",\n  \"recipients\": [\"ceo@sunite.com\", \"cfo@sunite.com\"],\n  \"exportFormat\": \"PDF\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/reports/schedule",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "reports", "schedule"]
+        }
+      }
+    }
+  ]
+}

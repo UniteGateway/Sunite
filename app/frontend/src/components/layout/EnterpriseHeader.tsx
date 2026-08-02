@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
-import { useLayout } from '@/lib/layout-context';
 import { UserRole } from '@/lib/types';
 import {
   Bell,
@@ -16,13 +15,10 @@ import {
   ChevronDown,
   Activity,
   Plus,
-  Maximize2,
-  Minimize2
 } from 'lucide-react';
 
 export const EnterpriseHeader: React.FC = () => {
   const { user, role, switchRole, logout, theme, toggleTheme } = useAuth();
-  const { isFullscreen, toggleFullscreen } = useLayout();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -88,19 +84,6 @@ export const EnterpriseHeader: React.FC = () => {
           className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
         >
           {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5 text-amber-400" />}
-        </button>
-
-        {/* Full Screen Mode Toggle */}
-        <button
-          onClick={toggleFullscreen}
-          title={isFullscreen ? 'Exit Full Screen' : 'Full Screen Mode'}
-          className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors"
-        >
-          {isFullscreen ? (
-            <Minimize2 className="h-5 w-5 text-amber-500" />
-          ) : (
-            <Maximize2 className="h-5 w-5" />
-          )}
         </button>
 
         {/* Notification Center */}

@@ -1,7 +1,6 @@
 import React from 'react';
 import '@/app/globals.css';
 import { AuthProvider } from '@/lib/auth-context';
-import { LayoutProvider } from '@/lib/layout-context';
 import { MainLayout } from '@/components/layout/MainLayout';
 
 export const metadata = {
@@ -18,9 +17,7 @@ export default function RootLayout({
     <html lang="en" className="h-full">
       <body className="h-full bg-slate-50 font-sans antialiased dark:bg-slate-950 text-slate-900 dark:text-slate-100">
         <AuthProvider>
-          <LayoutProvider>
-            <MainLayout>{children}</MainLayout>
-          </LayoutProvider>
+          <MainLayout>{children}</MainLayout>
         </AuthProvider>
       </body>
     </html>
